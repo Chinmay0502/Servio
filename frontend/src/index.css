@@ -1,1 +1,41 @@
 @import "tailwindcss";
+body{
+    background-color: #010314;
+    color: white;
+}
+:root {
+  --color-primary: #4E2FB7;
+  --color-highlight: #E91E63;
+}
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-highlight: var(--color-highlight);
+}
+@font-face {
+  font-family: 'Roobert';
+  src: url('./assets/fonts/Roobert.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'font1';
+  src: url('./assets/fonts/font1.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'font2';
+  src: url('./assets/fonts/font2.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@keyframes shake {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-3px, -2px); }
+  40%  { transform: translate(3px, 2px); }
+  60%  { transform: translate(-3px, 2px); }
+  80%  { transform: translate(3px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+
