@@ -4,6 +4,13 @@ import { Eye, EyeOffIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {z} from "zod";
+
+const LoginSchema = z.object({
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(6, "Password must be of atleast 6 characters")
+})
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,7 +19,7 @@ const Login = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({resolver: zodResolver(LoginSchema)});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   async function submit(formData) {
@@ -39,7 +46,7 @@ const Login = () => {
     <div className="mt-8 px-2 lg:px-4 flex justify-center gap-20  lg:border border-blur-[14px] bg-transparent lg:bg-[rgba(20,22,35,0.55)] border-white/20 text-xl rounded-xl items-center py-10 w-3/4 mx-auto">
       <div className="rounded-br-2xl rounded-tr-2xl shadow-xl shadow-primary transition-all border border-blur-[14px] bg-[rgba(20,22,35,0.55)] border-white/20 text-xl rounded-xl w-full md:max-w-2/3 lg:max-w-2/4 p-5 md:p-10">
         <div className="mx-auto px-2 py-1 rounded-full flex flex-col justify-center items-center">
-          <img src="/Final_Logo.png" className="w-[2rem]" />
+          <img src="/Final_Logo.png" className="w-8" />
           <h2 className="text-lg font-semibold text-center text-highlight w-full">
             Welcome Back To Servio
           </h2>
@@ -53,9 +60,10 @@ const Login = () => {
             <input
               type="email"
               placeholder="Enter email here"
-              className="border border-blur-[14px] bg-[rgba(20,22,35,0.55)] border-white/20 text-xl rounded-xl py-1.5 pl-2"
+              className={`border bg-[rgba(20,22,35,0.55)]  text-xl rounded-xl py-1.5 pl-2 ${errors.email ? "border-red-300 focus:ring-2 focus:ring-red-300" : "border-blur-[14px] border-white/20"}`}
               {...register("email")}
             />
+            {errors.email && <p className="text-sm text-red-300">{errors.email.message}</p>}
           </div>
           <div className="flex flex-col gap-2">
             <label className="font-semibold text-lg">Password</label>
@@ -63,7 +71,7 @@ const Login = () => {
               <input
                 type={!showPassword ? "password" : "text"}
                 placeholder="Enter password here"
-                className="border border-blur-[14px] bg-[rgba(20,22,35,0.55)] border-white/20 text-xl rounded-xl py-1.5 pl-2 pr-10 w-full"
+                className={`border ${errors.password ? "border-red-300 focus:ring-2 focus:ring-red-300" : "border-blur-[14px] border-white/20"} bg-[rgba(20,22,35,0.55)]  text-xl rounded-xl py-1.5 pl-2 pr-10 w-full`}
                 {...register("password")}
               />
               {!showPassword ? (
@@ -78,6 +86,7 @@ const Login = () => {
                 />
               )}
             </div>
+            {errors.password && <p className="text-sm text-red-300">{errors.password.message}</p>}
           </div>
           <div className="mx-auto mt-5 w-full">
             <button
@@ -101,7 +110,7 @@ const Login = () => {
         </form>
       </div>
       <div className="hidden lg:block">
-        <img src="/Service_Cover.png" className="w-[25rem]" />
+        <img src="/Service_Cover.png" className="w-100" />
       </div>
     </div>
   );

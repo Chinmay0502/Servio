@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ["MALE", "FEMALE", "OTHERS"],
+        enum: ["MALE", "FEMALE", "OTHER"],
         required: true
     },
     verificationToken: String,
