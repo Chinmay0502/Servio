@@ -81,8 +81,16 @@ const Signin = () => {
             type="text"
             placeholder="Enter aadhaar here"
             className="border border-blur-[14px] bg-[rgba(20,22,35,0.55)] border-white/20  rounded-xl py-1 pl-2"
-            {...register("aadhaar")}
+            {...register("aadhaarNo")}
           />
+        </div>
+        <div>
+          <label>Gender</label>
+          <div className="flex gap-3">
+            <input type="radio" {...register("gender")} id="gender" value="male"/>Male
+            <input type="radio" {...register("gender")} id="gender" value="female"/>Female
+            <input type="radio" {...register("gender")} id="gender" value="others"/>Others
+          </div>
         </div>
         <div className="flex flex-col gap-1">
           <label className="font-semibold text-sm">Password</label>

@@ -4,6 +4,8 @@ import { Eye, EyeOffIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import {login} from '../redux/slices/userSlice';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +17,8 @@ const Login = () => {
   } = useForm();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch= useDispatch();
+
   async function submit(formData) {
     if (isLoading) return;
     console.log(formData);
@@ -23,7 +27,9 @@ const Login = () => {
       const res = await axios.post(
         "http://localhost:8000/api/auth/user/login",
         formData,
+        {withCredentials: true}
       );
+      dispatch(login(res.data.user))
       toast.success(res.data.message || "User logged in successfully");
       navigate("/services");
     } catch (error) {
@@ -32,9 +38,9 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
-
     reset();
   }
+
   return (
     <div className="mt-8 px-2 lg:px-4 flex justify-center gap-20  lg:border border-blur-[14px] bg-transparent lg:bg-[rgba(20,22,35,0.55)] border-white/20 text-xl rounded-xl items-center py-10 w-3/4 mx-auto">
       <div className="rounded-br-2xl rounded-tr-2xl shadow-xl shadow-primary transition-all border border-blur-[14px] bg-[rgba(20,22,35,0.55)] border-white/20 text-xl rounded-xl w-full md:max-w-2/3 lg:max-w-2/4 p-5 md:p-10">

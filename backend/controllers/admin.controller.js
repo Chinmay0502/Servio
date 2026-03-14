@@ -215,7 +215,7 @@ export const getAllPendingProviderRequests = async (req, res) => {
 
 export const changeUserRole = async (req, res) => {
     try {
-
+        
         const { decision } = req.body;
         const { requestId } = req.params;
 

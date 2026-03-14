@@ -8,13 +8,19 @@ import About from "./pages/About";
 import Navbar from "./components/Navbar";
 import axios from "axios";
 import Services from "./pages/Services";
-import AdminLogin from "./pages/AdminLogin";
+import AdminLogin from "./pages/admin/AdminLogin"
 import Login from "./pages/Login";
-
+import Profile from "./pages/Profile";
+import LogoLoader from "./components/LogoLoader";
+import privateAxios from "./api/privateAxios";
+import Admin_Dashboard from "./pages/admin/Admin_Dashboard";
+import ServiceProvider_Dashboard from "./pages/service_Provider/ServiceProvider_Dashboard";
+import UserRoleChange from "./components/userRoleChange";
 
 const App = () => {
   const [location, setLocation] = useState();
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [loading, setLoading] = useState(false);
   const getLocation = async () => {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords;
@@ -34,11 +40,26 @@ const App = () => {
       }
     });
   };
-
   useEffect(() => {
     toast.success("Hi toast is working");
     getLocation();
   }, []);
+  useEffect(()=>{
+    //Request Interseptor
+    privateAxios.interceptors.request.use((config)=>{
+      setLoading(true);
+      return config;
+    },(error)=>{
+      return Promise.reject(error);
+    });
+    //Response Interseptor
+    privateAxios.interceptors.response.use((config)=>{
+      setLoading(false);
+      return config;
+    },(error)=>{
+      return Promise.reject(error);
+    });
+  },[])
 
   return (
     <BrowserRouter>
@@ -61,14 +82,19 @@ const App = () => {
         openDropdown={openDropdown}
         setOpenDropdown={setOpenDropdown}
       />
+      <LogoLoader show={loading}/>
       <Routes>
         <Route path="/" element={<Home />}></Route>
-        <Route path="/admin/login" element={<AdminLogin />}></Route>
+        <Route path="/admin/login" element={<AdminLogin/>}></Route>
+        <Route path="/admin/adminDashboard" element={<Admin_Dashboard/>}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/signin" element={<Signin />}></Route>
         <Route path="/contact" element={<Contact />}></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/services" element={<Services />}></Route>
+        <Route path="/serviceProvider" element={<ServiceProvider_Dashboard/>}></Route>
+        <Route path="/userRoleChange" element={<UserRoleChange/>}></Route>
+        <Route path="/profile" element={<Profile/>}></Route>
       </Routes>
     </BrowserRouter>
   );
