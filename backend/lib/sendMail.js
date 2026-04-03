@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const generateVerifyEmailOption = (email, token) => {
-  const verificationUrl = `${process.env.BASE_URL}/api/user/verify/${token}`;
+  const verificationUrl = `${process.env.BASE_URL}/api/auth/user/verify/${token}`;
 
   return {
     from: '"Servio" <support@servio.dev>',

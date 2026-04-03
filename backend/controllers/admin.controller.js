@@ -3,19 +3,36 @@ import jwt from "jsonwebtoken";
 import Admin from "../models/admin.model.js";
 import User from "../models/user.model.js";
 import Category from "../models/category.model.js";
-import { generateUserStatusChangeOption, sendEmail } from "../lib/sendMail.js";
+import {
+    generateUserStatusChangeOption,
+    sendEmail
+} from "../lib/sendMail.js";
 import ServiceProviderRequest from "../models/serviceProviderRequests.model.js";
-
+import { Service } from "../models/service.model.js";
 export const addAdmin = async (req, res) => {
-    const { userName, email, password } = req.body;
+    const {
+        userName,
+        email,
+        password
+    } = req.body;
     try {
-        const existingAdmin = await Admin.findOne({ $or: [{ email }, { userName }] });
+        const existingAdmin = await Admin.findOne({
+            $or: [{
+                email
+            }, {
+                userName
+            }]
+        });
 
         if (existingAdmin) return res.status(400).json({
             message: "Admin already exist",
             success: false
         });
-        const admin = await Admin.create({ userName, email, password });
+        const admin = await Admin.create({
+            userName,
+            email,
+            password
+        });
         if (!admin) return res.status(400).json({
             message: "Failed to create admin",
             success: false
@@ -39,9 +56,14 @@ export const addAdmin = async (req, res) => {
 }
 
 export const adminLogin = async (req, res) => {
-    const { email, password } = req.body;
+    const {
+        email,
+        password
+    } = req.body;
     try {
-        const admin = await Admin.findOne({ email });
+        const admin = await Admin.findOne({
+            email
+        });
         if (!admin) {
             return res.status(404).json({
                 message: "User not found",
@@ -53,7 +75,13 @@ export const adminLogin = async (req, res) => {
             message: "Invalid email or password",
             success: false
         })
-        const token = await jwt.sign({ id: admin._id, type: "ADMIN", role: "ADMIN" }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
+        const token = await jwt.sign({
+            id: admin._id,
+            type: "ADMIN",
+            role: "ADMIN"
+        }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRY
+        });
         res.cookie("token", token, {
             httpOnly: true,
             sameSite: "none",
@@ -80,7 +108,7 @@ export const adminLogin = async (req, res) => {
 
 export const adminLogout = async (req, res) => {
     try {
-        const adminId = req.user?.id;
+        const adminId = req.user.id;
         const admin = await Admin.findById(adminId);
         if (!admin) return res.status(401).json({
             message: "Admin Id not found",
@@ -106,7 +134,9 @@ export const adminLogout = async (req, res) => {
 }
 
 export const changeUserStatus = async (req, res) => {
-    const { userId } = req.params;
+    const {
+        userId
+    } = req.params;
     if (!userId) return res.status(400).json({
         message: "Invalid user Id",
         success: false
@@ -156,7 +186,9 @@ export const changeUserStatus = async (req, res) => {
 }
 
 export const changeCategoryStatus = async (req, res) => {
-    const { categoryId } = req.params;
+    const {
+        categoryId
+    } = req.params;
     try {
         const adminId = req.user.id;
         const admin = await Admin.findById(adminId);
@@ -192,9 +224,15 @@ export const getAllPendingProviderRequests = async (req, res) => {
             success: false
         });
         const pendingRequests = await ServiceProviderRequest
-            .find({ status: "PENDING" })
+            .find({
+                status: "PENDING"
+            })
+            .populate("providerId", "name email")
             .populate("categoryId", "name")
-            .sort({ createdAt: -1 });
+            .populate("subCategory", "name description price")
+            .sort({
+                createdAt: -1
+            });
         if (!pendingRequests) return res.status(404).json({
             message: "No requests found",
             success: false
@@ -213,65 +251,91 @@ export const getAllPendingProviderRequests = async (req, res) => {
     }
 }
 
-export const changeUserRole = async (req, res) => {
-    try {
-        
-        const { decision } = req.body;
-        const { requestId } = req.params;
+export const changeServiceRole = async (req, res) => {
+  try {
 
-        if (!["ACCEPT", "REJECT"].includes(decision)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid decision"
-            });
-        }
+    const { decision } = req.body;
+    const { requestId } = req.params;
 
-        const admin = await Admin.findById(req.user.id);
-
-        if (!admin) {
-            return res.status(403).json({
-                success: false,
-                message: "Unauthorized access"
-            });
-        }
-
-        const request = await ServiceProviderRequest.findById(requestId);
-
-        if (!request) {
-            return res.status(404).json({
-                success: false,
-                message: "Request not found"
-            });
-        }
-
-        if (request.status !== "PENDING") {
-            return res.status(400).json({
-                success: false,
-                message: "Request already processed"
-            });
-        }
-
-        if (decision === "ACCEPT") {
-            await User.findByIdAndUpdate(request.providerId, {
-                role: "SERVICE_PROVIDER"
-            });
-        }
-
-        request.status = decision === "ACCEPT" ? "ACCEPTED" : "REJECTED";
-        await request.save();
-
-        return res.status(200).json({
-            success: true,
-            message: "Status updated successfully",
-            request
-        });
-
-    } catch (error) {
-        console.error("Error changing service provider onboarding status:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+    // validate decision
+    if (!["ACCEPT", "REJECT"].includes(decision)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid decision"
+      });
     }
+
+    // check admin
+    const adminId = req.user?.id;
+
+    const admin = await Admin.findById(adminId);
+
+    if (!admin) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized access"
+      });
+    }
+
+    // find request
+    const request = await ServiceProviderRequest.findById(requestId);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found"
+      });
+    }
+
+    // check request status
+    if (request.status !== "PENDING") {
+      return res.status(400).json({
+        success: false,
+        message: "Request already processed"
+      });
+    }
+
+    // ACCEPT LOGIC
+    if (decision === "ACCEPT") {
+
+      // update user role
+      await User.findByIdAndUpdate(request.providerId, {
+        role: "SERVICE_PROVIDER"
+      });
+
+      // create service entry
+      await Service.create({
+        providerId: request.providerId,
+        categoryId: request.categoryId,
+        name: request.subCategory.name,
+        description: request.subCategory.description,
+        price: request.subCategory.price
+      });
+
+      request.status = "ACCEPTED";
+    }
+
+    // REJECT LOGIC
+    if (decision === "REJECT") {
+      request.status = "REJECTED";
+    }
+
+    await request.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Request ${request.status.toLowerCase()} successfully`,
+      request
+    });
+
+  } catch (error) {
+
+    console.error("Error updating request:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+
+  }
 };

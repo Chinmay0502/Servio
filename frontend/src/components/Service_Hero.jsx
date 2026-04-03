@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
-const Services = () => {
+const Service_Hero = () => {
 
   const [services, setServices] = useState([]);
+  const scrollRef = useRef(null);
 
   const fetchServices = async () => {
     try {
@@ -24,22 +25,58 @@ const Services = () => {
     fetchServices();
   }, []);
 
+  const scrollLeft = () => {
+    scrollRef.current.scrollBy({
+      left: -500,
+      behavior: "smooth"
+    });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current.scrollBy({
+      left: 500,
+      behavior: "smooth"
+    });
+  };
 
   return (
-    <section className="w-full mt-10 px-7 md:px-10">
+    <section className="w-full py-12">
 
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-highlight">
+      <div className="max-w-7xl mx-auto px-6">
+
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-bold">
             Popular Services
           </h2>
-        <div className="flex flex-col md:flex-row gap-5 items-center mb-6 mt-10">
-          
+
+          {/* Mobile Screen Arrows */}
+          <div className="flex gap-3 md:hidden">
+            <button
+              onClick={scrollLeft}
+              className="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition"
+            >
+              <FaArrowLeft />
+            </button>
+
+            <button
+              onClick={scrollRight}
+              className="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition"
+            >
+              <FaArrowRight />
+            </button>
+          </div>
+        </div>
+
+        <div
+          ref={scrollRef}
+          className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible scroll-smooth"
+        >
 
           {services.map((service) => (
 
             <div
               key={service._id}
-              className="min-w-[22rem] md:w-[10rem] p-6 rounded-xl bg-[rgba(20,22,35,0.65)] border border-white/10 backdrop-blur-md shadow-lg 
+              className="min-w-[22rem] md:min-w-0 p-6 rounded-xl bg-[rgba(20,22,35,0.65)] border border-white/10 backdrop-blur-md shadow-lg 
               transition-all duration-300 cursor-pointer 
               hover:scale-105 hover:shadow-2xl hover:border-white/30"
             >
@@ -78,4 +115,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default Service_Hero;

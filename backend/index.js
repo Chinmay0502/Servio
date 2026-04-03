@@ -8,6 +8,7 @@ import authRouter from "./routes/auth.route.js";
 import adminRouter from "./routes/admin.route.js";
 import serviceProviderRequestRouter from "./routes/serviceProviderRequest.route.js";
 import categoryRouter from "./routes/category.route.js";
+import serviceRoutes from "./routes/service.route.js";
 
 
 dotenv.config();
@@ -35,5 +36,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/service-provider", serviceProviderRequestRouter);
+app.use("/api/services", serviceRoutes);
 
 app.listen(PORT, () => console.log(`Server is runnig at port: ${PORT}`));

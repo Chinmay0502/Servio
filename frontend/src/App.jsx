@@ -15,7 +15,7 @@ import LogoLoader from "./components/LogoLoader";
 import privateAxios from "./api/privateAxios";
 import Admin_Dashboard from "./pages/admin/Admin_Dashboard";
 import ServiceProvider_Dashboard from "./pages/service_Provider/ServiceProvider_Dashboard";
-import UserRoleChange from "./components/userRoleChange";
+import ServiceRequest from "./components/ServiceRequest";
 
 const App = () => {
   const [location, setLocation] = useState();
@@ -41,7 +41,6 @@ const App = () => {
     });
   };
   useEffect(() => {
-    toast.success("Hi toast is working");
     getLocation();
   }, []);
   useEffect(()=>{
@@ -93,7 +92,7 @@ const App = () => {
         <Route path="/about" element={<About />}></Route>
         <Route path="/services" element={<Services />}></Route>
         <Route path="/serviceProvider" element={<ServiceProvider_Dashboard/>}></Route>
-        <Route path="/userRoleChange" element={<UserRoleChange/>}></Route>
+        <Route path="/serviceRequest" element={<ServiceRequest/>}></Route>
         <Route path="/profile" element={<Profile/>}></Route>
       </Routes>
     </BrowserRouter>

@@ -66,7 +66,6 @@ const Navbar = ({ location, getLocation, openDropdown, setOpenDropdown }) => {
             </div>
           ) : null}
         </div>
-        {/* Menu Chart */}
         <div className="flex justify-center items-center">
           <nav className="lg:flex hidden px-5 py-2 text-sm rounded-full font-[Roobert] bg-[rgba(20,22,35,0.55)] backdrop-blur-[14px] border border-white/10 rounded-full">
             <ul className="flex gap-5">
