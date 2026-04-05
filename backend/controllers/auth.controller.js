@@ -3,6 +3,9 @@ import crypto from "crypto";
 
 import User from "../models/user.model.js";
 import { generateVerifyEmailOption, sendEmail } from "../lib/sendMail.js";
+import { uploadToCloudinary } from "../lib/uploadFile.js";
+import cloudinary from "../lib/cloudinary.js";
+
 
 export const userRegister = async (req, res) => {
     const { name, email, password, phone, aadhaarNo, gender } = req.body;
@@ -42,7 +45,7 @@ export const userRegister = async (req, res) => {
                 phone: newUser.phone,
                 role: newUser.role,
                 status: newUser.status,
-                image: newUser.image,
+                image: newUser.image.url,
                 gender: newUser.gender
             }
         })
@@ -121,7 +124,7 @@ export const userLogin = async (req, res) => {
                 phone: user.phone,
                 role: user.role,
                 status: user.status,
-                image: user.image,
+                image: user.image.url,
                 gender: user.gender
             }
         })
@@ -172,7 +175,17 @@ export const userProfile = async (req, res) => {
         return res.status(200).json({
             message: "User fetched successfully",
             success: true,
-            user
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: user.role,
+                status: user.status,
+                image: user.image.url,
+                gender: user.gender,
+                aadhaarNo: user.aadhaarNo
+            }
         });
     } catch (error) {
         console.error("Error getting user profile: ", error);
@@ -182,3 +195,63 @@ export const userProfile = async (req, res) => {
         })
     }
 }
+
+export const updateProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(401).json({
+                message: "Unauthorized access",
+                success: false
+            });
+        }
+
+        const { name, phone, aadhaarNo, gender } = req.body;
+
+        if (req.file) {
+            const uploadedImage = await uploadToCloudinary(req.file.path);
+
+            if (uploadedImage) {
+                // 🔥 Delete old image (if exists)
+                if (user.image?.public_id) {
+                    await cloudinary.uploader.destroy(user.image.public_id);
+                }
+
+                user.image = {
+                    url: uploadedImage.url,
+                    public_id: uploadedImage.public_id
+                };
+            }
+        }
+
+        if (name) user.name = name;
+        if (phone) user.phone = phone;
+        if (aadhaarNo) user.aadhaarNo = aadhaarNo;
+        if (gender) user.gender = gender;
+
+        await user.save();
+
+        res.status(200).json({
+            message: "User profile updated",
+            success: true,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: user.role,
+                status: user.status,
+                image: user.image.url,
+                gender: user.gender,
+                aadhaarNo: user.aadhaarNo
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({
+            message: "Internal server error",
+            success: false
+        });
+    }
+};

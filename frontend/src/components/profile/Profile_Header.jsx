@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { logout } from "../../redux/slices/userSlice";
+import { useEffect } from "react";
 const Profile_Header = () => {
   const user = useSelector((state) => state.user.value);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,8 +35,8 @@ const Profile_Header = () => {
     <div className="rounded-2xl shadow-xl transition-all border border-blur-[14px] bg-[rgba(20,22,35,0.55)] border-white/20 p-5 mt-5 flex flex-col items-center gap-5 h-[35rem]  justify-center">
       <div className=" flex flex-col items-center">
         <img
-          src="/Profile_Image.jpg"
-          className=" w-[8rem] lg:w-[8rem] rounded-full"
+          src={user.image || "/Profile_Image.jpg"}
+          className="h-32 w-32  rounded-full object-cover"
         />
         <div className="mt-3 flex flex-col p-2 justify-center text-center">
           {user ? (
@@ -58,15 +59,15 @@ const Profile_Header = () => {
               <span className="font-bold">Role- </span>
             </p>
           )}
-          <button className="bg-highlight rounded-md mt-5 px-2 py-1 font-semibold cursor-pointer">
+          <Link to="/profile/update" className="bg-highlight rounded-md mt-5 px-2 py-1 font-semibold cursor-pointer">
             Edit
-          </button>
+          </Link>
         </div>
       </div>
       <div className="bg-primary p-3 rounded-xl shadow-sm shadow-highlight">
         <ul className="">
           <li className="flex gap-1">
-            Gender- <spna> {user ? user.gender : ""}</spna>
+            Gender- <span> {user ? user.gender : ""}</span>
           </li>
           <li className="flex gap-1">
             <span>Mobile-</span> {user ? user.phone : ""}
@@ -91,7 +92,7 @@ const Profile_Header = () => {
           {isLoading ? <Loader2 className="animate-spin size-6" /> : "Logout"}
         </button>
       )}
-      {user.role === "CONSUMER" ? (
+      {user?.role === "CONSUMER" ? (
         <Link
           to="/serviceRequest"
           className="w-full text-center bg-highlight px-2 py-1 rounded-md font-semibold cursor-pointer"
