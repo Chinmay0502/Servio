@@ -29,11 +29,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["CONSUMER", "SERVICE_PROVIDER", "WORKER"],
         required: true,
-        default: "CONSUMER" 
+        default: "CONSUMER"
     },
     image: {
-        type: String,
-        default: ""
+        url: {
+            type: String,
+            default: ""
+        },
+        public_id: {
+            type: String,
+            default: ""
+        }
     },
     aadhaarNo: {
         type: String,
@@ -58,10 +64,10 @@ const userSchema = new mongoose.Schema({
     verificationTokenExpiry: Date,
     resetPasswordToken: String,
     resetPasswordExpiry: Date,
-}, {timestamps: true});
+}, { timestamps: true });
 
-userSchema.pre("save",async function() {
-    if(this.isModified("password")) {
+userSchema.pre("save", async function () {
+    if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 10);
     }
 })

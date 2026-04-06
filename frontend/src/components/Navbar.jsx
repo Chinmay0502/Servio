@@ -117,7 +117,7 @@ const Navbar = ({ location, getLocation, openDropdown, setOpenDropdown }) => {
           {user ? (
             <Link to={"/profile"}>
               <button className="hidden lg:inline bg-primary md:bg-[#010314] md:hover:bg-primary px-4 py-2 font-[Roobert] cursor-pointer text-sm rounded-md text-white font-semibold">
-                profile
+                Profile
               </button> 
             </Link>
           ) : (
