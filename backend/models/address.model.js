@@ -66,7 +66,7 @@ const addressSchema = new Schema({
     timestamps: true
 });
 
-// 🔥 Geo Index for nearby search
+// Geo Index for nearby search
 addressSchema.index({ location: "2dsphere" });
 
 const Address = model("Address", addressSchema);

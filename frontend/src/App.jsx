@@ -20,7 +20,6 @@ import ServiceProvider_Dashboard from "./pages/service_Provider/ServiceProvider_
 import ServiceRequest from "./components/ServiceRequest";
 import UpdateProfile from "./pages/UpdateProfile";
 
-// 🔥 Redux actions
 import { login, logout, setLoading as setAuthLoading } from "./redux/slices/userSlice";
 
 const App = () => {
@@ -30,7 +29,6 @@ const App = () => {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 🌍 Get Location
   const getLocation = async () => {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords;
@@ -51,7 +49,6 @@ const App = () => {
     getLocation();
   }, []);
 
-  // 🔥 AXIOS INTERCEPTORS (FIXED)
   useEffect(() => {
     const reqInterceptor = privateAxios.interceptors.request.use(
       (config) => {
@@ -71,15 +68,13 @@ const App = () => {
         return Promise.reject(error);
       }
     );
-
-    // ✅ cleanup (VERY IMPORTANT)
     return () => {
       privateAxios.interceptors.request.eject(reqInterceptor);
       privateAxios.interceptors.response.eject(resInterceptor);
     };
   }, []);
 
-  // 🔥 GET PROFILE ON LOAD
+  // GET PROFILE ON LOAD
   useEffect(() => {
     const fetchProfile = async () => {
       try {

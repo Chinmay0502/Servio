@@ -4,7 +4,7 @@ export const userSlice = createSlice({
     name: 'user',
     initialState: {
         value: null,
-        loading: true // 🔥 important
+        loading: true // important
     },
     reducers: {
         login: (state, action) => {

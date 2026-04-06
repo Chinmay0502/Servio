@@ -5,9 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { logout } from "../../redux/slices/userSlice";
-import { useEffect } from "react";
+import LogoLoader from "../LogoLoader";
+
 const Profile_Header = () => {
   const user = useSelector((state) => state.user.value);
+  const loading = useSelector((state) => state.user.loading);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -31,12 +33,14 @@ const Profile_Header = () => {
     }
   }
 
+  if(loading) return (<LogoLoader show={loading} />)
+
   return (
     <div className="rounded-2xl shadow-xl transition-all border border-blur-[14px] bg-[rgba(20,22,35,0.55)] border-white/20 p-5 mt-5 flex flex-col items-center gap-5 h-[35rem]  justify-center">
       <div className=" flex flex-col items-center">
         <img
           src={user.image || "/Profile_Image.jpg"}
-          className="h-32 w-32  rounded-full object-cover"
+          className="h-32 w-32  rounded-full object-cover border-4 border-white"
         />
         <div className="mt-3 flex flex-col p-2 justify-center text-center">
           {user ? (

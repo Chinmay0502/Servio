@@ -125,7 +125,8 @@ export const userLogin = async (req, res) => {
                 role: user.role,
                 status: user.status,
                 image: user.image.url,
-                gender: user.gender
+                gender: user.gender,
+                aadhaarNo: user.aadhaarNo
             }
         })
     } catch (error) {
