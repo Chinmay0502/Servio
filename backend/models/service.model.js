@@ -1,34 +1,44 @@
 import mongoose from "mongoose";
 
-const serviceSchema = new mongoose.Schema(
-  {
-    providerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
+const serviceSchema = new mongoose.Schema({
+  providerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 
-    categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true
-    },
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
 
-    name: {
+  name: {
+    type: String,
+    required: true,
+  },
+
+  description: {
+    type: String,
+  },
+
+  price: {
+    type: Number,
+    required: true,
+  },
+
+  images: [{
+    url: {
       type: String,
       required: true
     },
-
-    description: {
-      type: String
-    },
-
-    price: {
-      type: Number,
+    public_id: {
+      type: String,
       required: true
-    }
-  },
-  { timestamps: true }
-);
+    },
+  }, ],
+}, {
+  timestamps: true
+});
 
 export const Service = mongoose.model("Service", serviceSchema);

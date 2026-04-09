@@ -55,6 +55,19 @@ body{
   }
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 17s linear infinite;
+}
+
 .animate-spin-slow{
   animation: spinSlow 8s linear infinite;
 }
@@ -63,4 +76,11 @@ body{
   animation: pulseSlow 2s ease-in-out infinite;
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}

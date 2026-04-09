@@ -8,7 +8,9 @@ import {
     sendEmail
 } from "../lib/sendMail.js";
 import ServiceProviderRequest from "../models/serviceProviderRequests.model.js";
-import { Service } from "../models/service.model.js";
+import {
+    Service
+} from "../models/service.model.js";
 export const addAdmin = async (req, res) => {
     const {
         userName,
@@ -252,90 +254,95 @@ export const getAllPendingProviderRequests = async (req, res) => {
 }
 
 export const changeServiceRole = async (req, res) => {
-  try {
+    try {
 
-    const { decision } = req.body;
-    const { requestId } = req.params;
+        const {
+            decision
+        } = req.body;
+        const {
+            requestId
+        } = req.params;
 
-    // validate decision
-    if (!["ACCEPT", "REJECT"].includes(decision)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid decision"
-      });
+        // validate decision
+        if (!["ACCEPT", "REJECT"].includes(decision)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid decision"
+            });
+        }
+
+        // check admin
+        const adminId = req.user ?.id;
+
+        const admin = await Admin.findById(adminId);
+
+        if (!admin) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized access"
+            });
+        }
+
+        // find request
+        const request = await ServiceProviderRequest.findById(requestId);
+
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                message: "Request not found"
+            });
+        }
+
+        // check request status
+        if (request.status !== "PENDING") {
+            return res.status(400).json({
+                success: false,
+                message: "Request already processed"
+            });
+        }
+
+        // ACCEPT LOGIC
+        if (decision === "ACCEPT") {
+
+            // update user role
+            await User.findByIdAndUpdate(request.providerId, {
+                role: "SERVICE_PROVIDER"
+            });
+
+            // create service entry
+            await Service.create({
+                providerId: request.providerId,
+                categoryId: request.categoryId,
+                name: request.subCategory.name,
+                description: request.subCategory.description,
+                price: request.subCategory.price,
+                images: request.subCategory.images,
+            });
+
+            request.status = "ACCEPTED";
+        }
+
+        // REJECT LOGIC
+        if (decision === "REJECT") {
+            request.status = "REJECTED";
+        }
+
+        await request.save();
+
+        return res.status(200).json({
+            success: true,
+            message: `Request ${request.status.toLowerCase()} successfully`,
+            request
+        });
+
+    } catch (error) {
+
+        console.error("Error updating request:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+
     }
-
-    // check admin
-    const adminId = req.user?.id;
-
-    const admin = await Admin.findById(adminId);
-
-    if (!admin) {
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized access"
-      });
-    }
-
-    // find request
-    const request = await ServiceProviderRequest.findById(requestId);
-
-    if (!request) {
-      return res.status(404).json({
-        success: false,
-        message: "Request not found"
-      });
-    }
-
-    // check request status
-    if (request.status !== "PENDING") {
-      return res.status(400).json({
-        success: false,
-        message: "Request already processed"
-      });
-    }
-
-    // ACCEPT LOGIC
-    if (decision === "ACCEPT") {
-
-      // update user role
-      await User.findByIdAndUpdate(request.providerId, {
-        role: "SERVICE_PROVIDER"
-      });
-
-      // create service entry
-      await Service.create({
-        providerId: request.providerId,
-        categoryId: request.categoryId,
-        name: request.subCategory.name,
-        description: request.subCategory.description,
-        price: request.subCategory.price
-      });
-
-      request.status = "ACCEPTED";
-    }
-
-    // REJECT LOGIC
-    if (decision === "REJECT") {
-      request.status = "REJECTED";
-    }
-
-    await request.save();
-
-    return res.status(200).json({
-      success: true,
-      message: `Request ${request.status.toLowerCase()} successfully`,
-      request
-    });
-
-  } catch (error) {
-
-    console.error("Error updating request:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error"
-    });
-
-  }
 };
