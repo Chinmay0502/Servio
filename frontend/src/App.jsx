@@ -30,6 +30,7 @@ import Verify from "./components/Verify";
 import ServiceProviderLayout from "./pages/service_Provider/ServiceProviderLayout";
 import ServiceRequests from "./pages/service_Provider/ServiceRequests";
 import AddService from "./pages/service_Provider/AddService";
+import SearchResultPage from "./pages/SearchResultPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -145,6 +146,8 @@ const App = () => {
           <Route path="requests" element={<ServiceRequests />} />
           <Route path="add-service" element={<AddService />} />
         </Route>
+
+        <Route path="/search" element={<SearchResultPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>

@@ -22,7 +22,7 @@ const Services = () => {
 
   const filterButtons = [
     { label: "All", value: "all" },
-    { label: "Electrician", value: "electrician" },
+    { label: "Electrician", value: "electrical services" },
     { label: "Plumbing", value: "plumbing" },
     { label: "Painting", value: "painting" },
     { label: "AC Repair", value: "ac" },
@@ -106,7 +106,6 @@ const Services = () => {
               key={service._id}
               className="bg-[#12121f] border border-[#6c3be8]/25 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:border-primary hover:shadow-primary"
             >
-              {/* 🔥 TOP IMAGE SECTION */}
               {service.images && service.images.length > 0 ? (
                 <div className="w-full h-44 overflow-x-auto flex snap-x snap-mandatory scroll-smooth no-scrollbar">
                   {service.images.map((img, index) => (

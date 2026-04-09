@@ -17,7 +17,18 @@ const Navbar = ({ location, getLocation, openDropdown, setOpenDropdown }) => {
     setOpenDropdown(!openDropdown);
   };
   const [openNav, setOpenNav] = useState(false);
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user.value);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    if (!search.trim()) return;
+
+    navigate(`/search?q=${search}`);
+    setSearch(""); // optional (clear input)
+  };
 
   return (
     <div className="px-3 py-2 sticky">
@@ -105,20 +116,31 @@ const Navbar = ({ location, getLocation, openDropdown, setOpenDropdown }) => {
           </nav>
         </div>
         <div className="flex justify-center items-center gap-2">
-          <div className="md:flex hidden border border-blur-[14px] border-white/10 px-2 py-2.5 rounded-md bg-highlight hover:bg-primary cursor-pointer">
-            <FaSearch />
-          </div>
-          <input
-            type="text"
-            className="md:flex hidden text-white text-sm bg-[rgba(20,22,35,0.55)] backdrop-blur-[14px] border border-white/10 rounded-md  px-2 py-2 w-[8rem]"
-            placeholder="Services"
-          />
-        {/* Login and logout Section */}
+          <form onSubmit={handleSearch} className="flex items-center gap-2">
+
+            {/* Search Button */}
+            <button
+              type="submit"
+              className="md:flex hidden border border-white/10 px-2 py-2.5 rounded-md bg-highlight hover:bg-primary cursor-pointer"
+            >
+              <FaSearch />
+            </button>
+
+            {/* Input */}
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Services"
+              className="md:flex hidden text-white text-sm bg-[rgba(20,22,35,0.55)] backdrop-blur-[14px] border border-white/10 rounded-md px-2 py-2 w-[8rem]"
+            />
+          </form>
+          {/* Login and logout Section */}
           {user ? (
             <Link to={"/profile"}>
               <button className="hidden lg:inline bg-primary md:bg-[#010314] md:hover:bg-primary px-4 py-2 font-[Roobert] cursor-pointer text-sm rounded-md text-white font-semibold">
                 Profile
-              </button> 
+              </button>
             </Link>
           ) : (
             <Link to={"/login"}>

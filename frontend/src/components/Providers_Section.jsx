@@ -9,7 +9,7 @@ const Providers_Section = () => {
 
   const filterButtons = [
     { label: "All", value: "all" },
-    { label: "Electrician", value: "electrician" },
+    { label: "Electrician", value: "electrical services" },
     { label: "Plumbing", value: "plumbing" },
     { label: "Painting", value: "painting" },
     { label: "AC Repair", value: "ac" },
@@ -26,7 +26,7 @@ const Providers_Section = () => {
       const res = await axios.get(
         "http://localhost:8000/api/services/get-all-services",
       );
-
+      console.log(res.data.services);
       setServicesData(res.data.services || []);
     } catch (error) {
       console.log(error.response?.data);
