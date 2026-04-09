@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const ServiceRequest = () => {
+const AddService = () => {
   const { register, handleSubmit, watch, reset } = useForm();
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -160,4 +160,4 @@ const ServiceRequest = () => {
   );
 };
 
-export default ServiceRequest;
+export default AddService;

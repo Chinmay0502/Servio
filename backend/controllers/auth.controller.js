@@ -256,3 +256,29 @@ export const updateProfile = async (req, res) => {
         });
     }
 };
+
+export const checkVerificationStatus = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      isVerified: user.isVerified,
+    });
+  } catch (error) {
+    console.error("Error checking verification status:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};

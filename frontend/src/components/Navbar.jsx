@@ -20,7 +20,7 @@ const Navbar = ({ location, getLocation, openDropdown, setOpenDropdown }) => {
   const user = useSelector((state) => state.user.value);
 
   return (
-    <div className="px-3 py-2">
+    <div className="px-3 py-2 sticky">
       <div className="border border-blur-[14px] bg-[rgba(20,22,35,0.55)] border-white/20 py-2 rounded-full md:border-0 md:bg-[#010314] w-full px-10 sticky left-0 right-0 md:py-0 text-white flex justify-between mt-3">
         {/* Logo Section */}
         <div className="flex justify-center items-center gap-5">

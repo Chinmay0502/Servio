@@ -187,7 +187,7 @@ const Address_Section = () => {
             setEditingAddress(null);
             reset();
           }}
-          className="bg-primary px-2 py-1 rounded-md"
+          className="bg-primary px-2 py-1 rounded-md cursor-pointer"
         >
           New Address +
         </button>
@@ -208,13 +208,13 @@ const Address_Section = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(addr)}
-                    className="text-sm bg-blue-500 px-2 rounded"
+                    className="text-sm bg-blue-500 px-2 rounded cursor-pointer"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(addr._id)}
-                    className="text-sm bg-red-500 px-2 rounded"
+                    className="text-sm bg-red-500 px-2 rounded cursor-pointer"
                   >
                     Delete
                   </button>
@@ -283,11 +283,11 @@ const Address_Section = () => {
               {/* Buttons */}
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setShowModal(false)}
-                  className="px-3 py-1 bg-gray-500 rounded"
+                  className="px-3 py-1 bg-gray-500 rounded cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button type="submit" disabled={loading} className="px-3 py-1 bg-primary rounded flex justify-center items-center disabled:opacity-50">
+                <button type="submit" disabled={loading} className="px-3 py-1 bg-primary rounded flex justify-center items-center disabled:opacity-50 cursor-pointer">
                   {loading ? "Saving..." : "Save"}
                 </button>
               </div>

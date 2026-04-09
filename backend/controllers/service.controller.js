@@ -4,7 +4,7 @@ export const getAllServices = async (req, res) => {
   try {
 
     const services = await Service.find()
-      .populate("providerId", "name email")
+      .populate("providerId", "name email image")
       .populate("categoryId", "name")
       .sort({ createdAt: -1 });
 
