@@ -4,21 +4,34 @@ const subCategorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
 
   description: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
 
   price: {
     type: Number,
     required: true,
-    min: 0
-  }
-}, { _id: false });
+    min: 0,
+  },
+
+  images: [{
+    url: {
+      type: String,
+      required: true
+    },
+    public_id: {
+      type: String,
+      required: true
+    },
+  }, ],
+}, {
+  _id: false
+});
 
 
 const serviceProviderRequestSchema = new mongoose.Schema({
@@ -43,13 +56,17 @@ const serviceProviderRequestSchema = new mongoose.Schema({
 
   subCategory: subCategorySchema
 
-}, { timestamps: true });
+}, {
+  timestamps: true
+});
 
 
-serviceProviderRequestSchema.index(
-  { providerId: 1, categoryId: 1 },
-  { unique: true }
-);
+serviceProviderRequestSchema.index({
+  providerId: 1,
+  categoryId: 1
+}, {
+  unique: true
+});
 
 const ServiceProviderRequest = mongoose.model(
   "ServiceProviderRequest",

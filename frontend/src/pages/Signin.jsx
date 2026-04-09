@@ -67,8 +67,9 @@ const Signin = () => {
         data,
       );
       toast.success(res.data.message || "User created successfully");
+      sessionStorage.setItem("verifyEmail", res.data.user.email);
       reset();
-      navigate("/services");
+      navigate("/verify-email");
     } catch (error) {
       console.error(error);
       toast.error("Error creating user");

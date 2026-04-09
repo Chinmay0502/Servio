@@ -20,7 +20,17 @@ import ServiceProvider_Dashboard from "./pages/service_Provider/ServiceProvider_
 import ServiceRequest from "./components/ServiceRequest";
 import UpdateProfile from "./pages/UpdateProfile";
 
-import { login, logout, setLoading as setAuthLoading } from "./redux/slices/userSlice";
+import {
+  login,
+  logout,
+  setLoading as setAuthLoading,
+} from "./redux/slices/userSlice";
+import Footer from "./components/Footer";
+import Verify from "./components/Verify";
+import ServiceProviderLayout from "./pages/service_Provider/ServiceProviderLayout";
+import ServiceRequests from "./pages/service_Provider/ServiceRequests";
+import AddService from "./pages/service_Provider/AddService";
+import SearchResultPage from "./pages/SearchResultPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -55,7 +65,7 @@ const App = () => {
         setLoading(true);
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     const resInterceptor = privateAxios.interceptors.response.use(
@@ -66,7 +76,7 @@ const App = () => {
       (error) => {
         setLoading(false);
         return Promise.reject(error);
-      }
+      },
     );
     return () => {
       privateAxios.interceptors.request.eject(reqInterceptor);
@@ -121,13 +131,25 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
-        <Route path="/serviceProvider" element={<ServiceProvider_Dashboard />} />
+
         <Route path="/serviceRequest" element={<ServiceRequest />} />
+
         <Route path="/profile">
           <Route index element={<Profile />} />
           <Route path="update" element={<UpdateProfile />} />
         </Route>
+
+        <Route path="/verify-email" element={<Verify />} />
+
+        <Route path="/serviceProvider" element={<ServiceProviderLayout />}>
+          <Route path="dashboard" element={<ServiceProvider_Dashboard />} />
+          <Route path="requests" element={<ServiceRequests />} />
+          <Route path="add-service" element={<AddService />} />
+        </Route>
+
+        <Route path="/search" element={<SearchResultPage />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 };
