@@ -10,6 +10,7 @@ import serviceProviderRequestRouter from "./routes/serviceProviderRequest.route.
 import categoryRouter from "./routes/category.route.js";
 import serviceRoutes from "./routes/service.route.js";
 import addressRouter from "./routes/address.route.js";
+import taskRouter from "./routes/task.route.js";
 
 
 dotenv.config();
@@ -39,5 +40,6 @@ app.use("/api/category", categoryRouter);
 app.use("/api/service-provider", serviceProviderRequestRouter);
 app.use("/api/services", serviceRoutes);
 app.use("/api/address", addressRouter);
+app.use("/api/task", taskRouter);
 
 app.listen(PORT, () => console.log(`Server is runnig at port: ${PORT}`));
