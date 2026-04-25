@@ -213,7 +213,7 @@ export const updateProfile = async (req, res) => {
             const uploadedImage = await uploadToCloudinary(req.file.path);
 
             if (uploadedImage) {
-                // 🔥 Delete old image (if exists)
+                // Delete old image (if exists)
                 if (user.image?.public_id) {
                     await cloudinary.uploader.destroy(user.image.public_id);
                 }

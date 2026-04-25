@@ -184,3 +184,90 @@ Servio Support Team
     `
   };
 };
+export const generateOtpEmailOption = (email, otp, serviceName) => {
+  return {
+    from: '"Servio" <support@servio.dev>',
+    to: email,
+    subject: "Your Service OTP Verification Code",
+    text: `
+Your OTP for starting the service is: ${otp}
+
+This OTP is valid for 5 minutes.
+
+Do not share this OTP with anyone.
+    `,
+    html: `
+<!DOCTYPE html>
+<html>
+  <body style="font-family: Arial, sans-serif; background-color: #f3f4f6; padding: 20px;">
+    <table width="100%" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="center">
+          <table width="100%" style="max-width: 500px; background: #ffffff; padding: 24px; border-radius: 10px;">
+            
+            <tr>
+              <td style="text-align: center;">
+                <h2 style="margin: 0; color: #111827;">Servio Verification</h2>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding-top: 20px;">
+                <p style="color: #374151; font-size: 14px;">
+                  Your service <strong>${serviceName}</strong> is about to begin.
+                </p>
+
+                <p style="color: #374151; font-size: 14px;">
+                  Please share the following OTP with your service worker to start the task.
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center" style="padding: 24px 0;">
+                <div style="
+                  font-size: 32px;
+                  letter-spacing: 8px;
+                  font-weight: bold;
+                  color: #2563eb;
+                  background: #eff6ff;
+                  padding: 16px 24px;
+                  border-radius: 8px;
+                  display: inline-block;
+                ">
+                  ${otp}
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <p style="color: #6b7280; font-size: 13px;">
+                  ⏳ This OTP is valid for <strong>5 minutes</strong>.
+                </p>
+
+                <p style="color: #dc2626; font-size: 13px;">
+                  ⚠️ Do NOT share this OTP with anyone except your assigned worker.
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;" />
+
+                <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                  © ${new Date().getFullYear()} Servio. All rights reserved.
+                </p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+    `
+  };
+};
