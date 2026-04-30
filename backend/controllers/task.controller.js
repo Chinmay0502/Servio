@@ -386,7 +386,7 @@ export const generateOtp = async (req, res) => {
     const emailOptions = generateOtpEmailOption(
       task.userId.email,
       otp,
-      task.serviceId.name
+      task.serviceId.name,
     );
 
     await sendEmail(emailOptions);

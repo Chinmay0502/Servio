@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
+import { Play } from "lucide-react";
 
 const WorkerDashboard = () => {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ const WorkerDashboard = () => {
 
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [actionType, setActionType] = useState("start");
+
 
   const [otpModal, setOtpModal] = useState(false);
   const [otp, setOtp] = useState("");
@@ -54,8 +57,31 @@ const WorkerDashboard = () => {
     fetchWorkerTasks();
   }, []);
 
-  // ================= Start Task =================
-  const handleStartTask = async () => {
+  const handleGenerateOtp = async (taskId, type = "start") => {
+    try {
+      await axios.post(
+        `http://localhost:8000/api/task/${taskId}/generate-otp`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${workerToken}`,
+          },
+        }
+      );
+
+      toast.success("OTP sent to customer!");
+
+      setSelectedTaskId(taskId);
+      setActionType(type); // ✅ important
+      setOtpModal(true);
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Failed to generate OTP");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
     if (!otp || otp.length !== 4) {
       return toast.error("Please enter valid 4-digit OTP");
     }
@@ -63,8 +89,13 @@ const WorkerDashboard = () => {
     try {
       setStartLoading(true);
 
+      const endpoint =
+        actionType === "start"
+          ? `http://localhost:8000/api/task/${selectedTaskId}/start`
+          : `http://localhost:8000/api/task/${selectedTaskId}/complete`;
+
       const res = await axios.patch(
-        `http://localhost:8000/api/task/start/${selectedTaskId}`,
+        endpoint,
         { otp },
         {
           withCredentials: true,
@@ -74,20 +105,20 @@ const WorkerDashboard = () => {
         }
       );
 
-      toast.success(res.data.message || "Task Started Successfully!");
+      toast.success(res.data.message);
+
       setOtpModal(false);
       setOtp("");
       setSelectedTaskId(null);
       fetchWorkerTasks();
     } catch (error) {
       console.log(error.response?.data || error.message);
-      toast.error(error.response?.data?.message || "Failed to start task");
+      toast.error(error.response?.data?.message || "Verification failed");
     } finally {
       setStartLoading(false);
     }
   };
 
-  // ================= Logout =================
   const handleLogout = () => {
     localStorage.removeItem("workerToken");
     localStorage.removeItem("workerData");
@@ -114,7 +145,7 @@ const WorkerDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-[#050511] via-[#0b0b22] to-[#120033] text-white">
+    <div className="min-h-screen px-6 py-10 text-white">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center flex-wrap gap-4 mb-10">
@@ -198,13 +229,19 @@ const WorkerDashboard = () => {
                   <div className="flex gap-3">
                     {task.status === "WORKER_ASSIGNED" && (
                       <button
-                        onClick={() => {
-                          setSelectedTaskId(task._id);
-                          setOtpModal(true);
-                        }}
-                        className="px-5 py-2 rounded-xl bg-green-600/20 border border-green-500/30 text-green-300 hover:bg-green-600/30 transition"
+                        onClick={() => handleGenerateOtp(task._id, "start")}
+                        className="px-5 py-2 rounded-xl bg-green-600/20 border border-green-500/30 text-green-300 hover:bg-green-600/30 transition flex gap-2 items-center"
                       >
-                        ▶ Start Task
+                        <Play className="size-5" /> Start Task
+                      </button>
+                    )}
+
+                    {task.status === "STARTED" && (
+                      <button
+                        onClick={() => handleGenerateOtp(task._id, "complete")}
+                        className="px-5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600/30 transition flex gap-2 items-center"
+                      >
+                        ✅ Complete Task
                       </button>
                     )}
 
@@ -275,7 +312,9 @@ const WorkerDashboard = () => {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
           <div className="bg-[#11112a] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-lg">
             <h2 className="text-lg font-bold mb-2 text-white">
-              Enter OTP to Start Task
+              {actionType === "start"
+                ? "Enter OTP to Start Task"
+                : "Enter OTP to Complete Task"}
             </h2>
 
             <p className="text-sm text-white/60 mb-4">
@@ -303,11 +342,24 @@ const WorkerDashboard = () => {
               </button>
 
               <button
-                onClick={handleStartTask}
+                onClick={handleVerifyOtp}
                 disabled={startLoading}
                 className="px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
               >
-                {startLoading ? "Starting..." : "Start"}
+                {startLoading
+                  ? actionType === "start"
+                    ? "Starting..."
+                    : "Completing..."
+                  : actionType === "start"
+                    ? "Start"
+                    : "Complete"}
+              </button>
+
+              <button
+                onClick={() => handleGenerateOtp(selectedTaskId)}
+                className="px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
+              >
+                Resend OTP
               </button>
             </div>
           </div>

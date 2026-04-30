@@ -8,7 +8,6 @@ const workerSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ✅ Multiple tasks
     taskIds: [
       {
         type: mongoose.Schema.Types.ObjectId,
