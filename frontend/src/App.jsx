@@ -19,7 +19,6 @@ import Admin_Dashboard from "./pages/admin/Admin_Dashboard";
 import ServiceProvider_Dashboard from "./pages/service_Provider/ServiceProvider_Dashboard";
 import ServiceRequest from "./components/ServiceRequest";
 import UpdateProfile from "./pages/UpdateProfile";
-
 import {
   login,
   logout,
@@ -31,6 +30,12 @@ import ServiceProviderLayout from "./pages/service_Provider/ServiceProviderLayou
 import ServiceRequests from "./pages/service_Provider/ServiceRequests";
 import AddService from "./pages/service_Provider/AddService";
 import SearchResultPage from "./pages/SearchResultPage";
+import ServiceDetails from "./pages/ServiceDetails";
+import MyBookings from "./pages/MyBooings";
+import TaskDetails from "./pages/TaskDetails";
+import AddWorker from "./pages/service_Provider/AddWorker";
+import WorkerLogin from "./pages/worker/WorkerLogin";
+import WorkerDashboard from "./pages/worker/WorkerDashboard";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -145,9 +150,15 @@ const App = () => {
           <Route path="dashboard" element={<ServiceProvider_Dashboard />} />
           <Route path="requests" element={<ServiceRequests />} />
           <Route path="add-service" element={<AddService />} />
+          <Route path="add-worker" element={<AddWorker/>} />
         </Route>
 
         <Route path="/search" element={<SearchResultPage />} />
+        <Route path="/service/:id" element={<ServiceDetails/>} />
+        <Route path="/my-bookings" element={<MyBookings/>} />
+        <Route path="/serviceDetails/:taskId" element={<TaskDetails/>}/>
+        <Route path="/worker/login" element={<WorkerLogin/>}/>
+        <Route path="/worker/dashboard" element={<WorkerDashboard/>}/>
       </Routes>
       <Footer />
     </BrowserRouter>

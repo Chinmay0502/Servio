@@ -77,7 +77,7 @@ const Profile_Header = () => {
             <span>Mobile-</span> {user ? user.phone : ""}
           </li>
           <li className="flex gap-1">
-            <span>Aadhaar-</span> 545068897125
+            <span>Aadhaar-</span> {user ? user.aadhaarNo : ""}
           </li>
           <li className="flex gap-1">
             <span>Email-</span> {user ? user.email : ""}
@@ -105,7 +105,7 @@ const Profile_Header = () => {
         </Link>
       ) : (
         <Link
-          to="/serviceProvider"
+          to="/serviceProvider/dashboard"
           className="w-full text-center bg-highlight px-2 py-1 rounded-md font-semibold cursor-pointer"
         >
           My Services

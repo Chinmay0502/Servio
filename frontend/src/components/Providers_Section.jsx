@@ -201,10 +201,16 @@ const Providers_Section = () => {
                   </p>
                 </div>
 
-                {/* Button */}
+                {/* Button
                 <button className="w-full border border-highlight text-highlight rounded-xl py-2 text-xs font-semibold hover:bg-highlight/10 hover:text-white transition-colors cursor-pointer">
                   Book Now
-                </button>
+                </button> */}
+                <Link
+                  to={`/service/${service._id}`}
+                  className="block w-full text-center border border-highlight text-highlight rounded-xl py-2 text-xs font-semibold hover:bg-highlight/10 hover:text-white transition-colors cursor-pointer"
+                >
+                  Book Now
+                </Link>
               </div>
             </div>
           ))}
