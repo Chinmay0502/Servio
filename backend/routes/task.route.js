@@ -32,8 +32,8 @@ taskRouter.get("/provider/:taskId", verifyToken, isServiceProvider, getProviderT
 // Worker
 taskRouter.get("/worker", verifyWorkerToken, getWorkerTasks);
 // taskRouter.get("/worker", verifyToken, isWorker, getWorkerTasks);
-taskRouter.post("/:taskId/generate-otp", verifyToken, isWorker, generateOtp);
-taskRouter.patch("/:taskId/start", verifyToken, isWorker, startTask);
-taskRouter.patch("/:taskId/complete", verifyToken, isWorker, completeTask);
+taskRouter.post("/:taskId/generate-otp", verifyWorkerToken, generateOtp);
+taskRouter.patch("/:taskId/start", verifyWorkerToken, startTask);
+taskRouter.patch("/:taskId/complete", verifyWorkerToken, completeTask);
 
 export default taskRouter;

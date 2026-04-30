@@ -56,7 +56,7 @@ const WorkerLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center px-4 bg-gradient-to-br from-[#050511] via-[#0b0b22] to-[#120033]">
+    <div className="min-h-screen flex justify-center items-center px-4 ">
       <div className="w-full max-w-md bg-[#11112a] border border-white/10 rounded-2xl shadow-xl p-8">
         <h1 className="text-2xl font-bold text-white text-center mb-2">
           Worker Login

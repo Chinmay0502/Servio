@@ -190,7 +190,7 @@ export const generateOtpEmailOption = (email, otp, serviceName) => {
     to: email,
     subject: "Your Service OTP Verification Code",
     text: `
-Your OTP for starting the service is: ${otp}
+Your OTP for the service is: ${otp}
 
 This OTP is valid for 5 minutes.
 

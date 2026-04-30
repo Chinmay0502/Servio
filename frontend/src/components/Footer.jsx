@@ -27,9 +27,7 @@ const Footer = () => {
               <div className="w-9 h-9 border border-[#6c3be8]/25 rounded-xl flex items-center justify-center cursor-pointer hover:border-highlight hover:bg-highlight/10 transition-colors text-sm">
                 f
               </div>
-              <div className="w-9 h-9 border border-[#6c3be8]/25 rounded-xl flex items-center justify-center cursor-pointer hover:border-highlight hover:bg-highlight/10 transition-colors text-sm">
-                ▶
-              </div>
+              
             </div>
           </div>
 
