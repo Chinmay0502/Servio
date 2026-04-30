@@ -112,6 +112,12 @@ const Login = () => {
                 Register Here
               </Link>
             </p>
+            <p className="text-sm mt-3 text-center">
+              Are you a worker ?{" "}
+              <Link className="text-highlight" to={"/worker/login"}>
+                login Here
+              </Link>
+            </p>
           </div>
         </form>
       </div>

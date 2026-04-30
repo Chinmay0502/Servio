@@ -35,6 +35,11 @@ const ServiceProviderLayout = () => {
             ➕ Add New Service
           </NavLink>
 
+          {/* ✅ NEW LINK */}
+          <NavLink to="/serviceProvider/add-worker" className={linkClass}>
+            👷 Add Worker
+          </NavLink>
+
           <NavLink to="/serviceProvider/history" className={linkClass}>
             📜 Booking History
           </NavLink>
@@ -43,7 +48,10 @@ const ServiceProviderLayout = () => {
             👤 My Profile
           </NavLink>
 
-          <NavLink to="/" className="px-4 py-3 rounded-xl hover:bg-red-600/20 transition text-red-400">
+          <NavLink
+            to="/"
+            className="px-4 py-3 rounded-xl hover:bg-red-600/20 transition text-red-400"
+          >
             🚪 Logout
           </NavLink>
         </nav>

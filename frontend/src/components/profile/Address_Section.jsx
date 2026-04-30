@@ -59,7 +59,7 @@ const Address_Section = () => {
       dispatch(setAddresses(res.data.addresses || []));
     } catch (err) {
       if (err.response?.status === 404) {
-        dispatch(setAddresses([])); // fallback
+        dispatch(setAddresses([]));
       }
     }
   };
