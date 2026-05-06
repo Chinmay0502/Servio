@@ -3,7 +3,6 @@ import { Service } from "../models/service.model.js";
 import { generateOtpEmailOption, sendEmail } from "../lib/sendMail.js";
 import Otp from "../models/otp.model.js";
 
-// ========================== CREATE TASK ==========================
 export const createTask = async (req, res) => {
   try {
     const { serviceId, addressId, serviceDate, preferredTime } = req.body;
@@ -26,7 +25,7 @@ export const createTask = async (req, res) => {
       addressId,
       price,
       serviceDate,
-      preferredTime, // ✅ single string slot
+      preferredTime, 
       status: "PENDING",
     });
 
@@ -44,7 +43,6 @@ export const createTask = async (req, res) => {
   }
 };
 
-// ========================== CANCEL TASK (DELETE) ==========================
 export const cancelTask = async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -58,23 +56,18 @@ export const cancelTask = async (req, res) => {
       });
     }
 
-    // ✅ Only the user who booked can cancel
     if (task.userId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "Unauthorized access",
         success: false,
       });
     }
-
-    // ❌ Cannot cancel if already started or completed
     if (task.status === "STARTED" || task.status === "COMPLETED") {
       return res.status(400).json({
         message: "Task cannot be cancelled now",
         success: false,
       });
     }
-
-    // ✅ Delete task from database
     await Task.findByIdAndDelete(taskId);
 
     return res.status(200).json({
@@ -91,7 +84,6 @@ export const cancelTask = async (req, res) => {
 };
 
 
-// ========================== RESPOND TASK ==========================
 export const respondToTask = async (req, res) => {
   try {
     const {
@@ -152,7 +144,6 @@ export const respondToTask = async (req, res) => {
   }
 };
 
-// ========================== ASSIGN WORKERS ==========================
 import Worker from "../models/worker.model.js";
 
 export const assignWorkers = async (req, res) => {
@@ -190,7 +181,6 @@ export const assignWorkers = async (req, res) => {
       });
     }
 
-    // ✅ Check all workers belong to this provider
     const validWorkers = await Worker.find({
       _id: { $in: workerIds },
       providerId: req.user.id,
@@ -202,16 +192,13 @@ export const assignWorkers = async (req, res) => {
         success: false,
       });
     }
-
-    // ✅ Assign workers in Task
     task.workers = workerIds;
     task.status = "WORKER_ASSIGNED";
     await task.save();
 
-    // ✅ Store taskId inside worker.taskIds[]
     await Worker.updateMany(
       { _id: { $in: workerIds } },
-      { $addToSet: { taskIds: taskId } } // prevents duplicate taskId
+      { $addToSet: { taskIds: taskId } }
     );
 
     return res.status(200).json({
@@ -228,7 +215,6 @@ export const assignWorkers = async (req, res) => {
   }
 };
 
-// ========================== GET USER TASKS ==========================
 export const getUserTasks = async (req, res) => {
   try {
     const tasks = await Task.find({
@@ -253,7 +239,6 @@ export const getUserTasks = async (req, res) => {
   }
 };
 
-// ========================== GET PROVIDER TASKS ==========================
 export const getProviderTasks = async (req, res) => {
   try {
     const tasks = await Task.find({
@@ -278,7 +263,6 @@ export const getProviderTasks = async (req, res) => {
   }
 };
 
-// ========================== GET WORKER TASKS ==========================
 export const getWorkerTasks = async (req, res) => {
   try {
     const tasks = await Task.find({
@@ -302,7 +286,7 @@ export const getWorkerTasks = async (req, res) => {
   }
 };
 
-// ========================== GET PROVIDER TASK BY ID ==========================
+
 export const getProviderTaskById = async (req, res) => {
   try {
     const {
@@ -322,7 +306,6 @@ export const getProviderTaskById = async (req, res) => {
       });
     }
 
-    // ✅ Ensure only provider can access
     if (task.providerId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "Unauthorized access",
@@ -344,7 +327,6 @@ export const getProviderTaskById = async (req, res) => {
   }
 };
 
-// ========================== GENERATE OTP ==========================
 export const generateOtp = async (req, res) => {
   try {
     const {
@@ -382,7 +364,6 @@ export const generateOtp = async (req, res) => {
       expiry,
     });
 
-    // ✅ FIXED: service.name was wrong
     const emailOptions = generateOtpEmailOption(
       task.userId.email,
       otp,
@@ -405,7 +386,7 @@ export const generateOtp = async (req, res) => {
   }
 };
 
-// ========================== START TASK ==========================
+
 export const startTask = async (req, res) => {
   try {
     const {
@@ -482,7 +463,6 @@ export const startTask = async (req, res) => {
   }
 };
 
-// ========================== COMPLETE TASK ==========================
 export const completeTask = async (req, res) => {
   try {
     const {
@@ -556,5 +536,72 @@ export const completeTask = async (req, res) => {
       message: "Internal server error",
       success: false
     });
+  }
+};
+
+export const giveRatingAndFeedback = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const userId = req.user.id;
+
+    const { rating, feedback } = req.body;
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found", success: false });
+    }
+
+    if (task.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Unauthorized", success: false });
+    }
+
+    if (task.status !== "COMPLETED") {
+      return res.status(400).json({
+        message: "You can only review after task completion",
+        success: false
+      });
+    }
+
+
+    if (task.rating) {
+      return res.status(400).json({
+        message: "You have already reviewed this task",
+        success: false
+      });
+    }
+
+    task.rating = rating;
+    task.feedback = feedback;
+
+    await task.save();
+
+    res.status(200).json({
+      message: "Rating & feedback submitted successfully",
+      task,
+      success: true
+    });
+  } catch (error) {
+    console.log("Rating error:", error.message);
+    res.status(500).json({ message: "Internal Server error", success: false });
+  }
+};
+
+export const getProviderReviews = async (req, res) => {
+  try {
+    const providerId = req.user.id;
+
+    const tasks = await Task.find({
+      providerId,
+      status: "COMPLETED",
+      rating: { $exists: true },
+    })
+      .populate("userId", "name image")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ reviews: tasks, success: true, message: "Reviews fetched successfully" });
+  } catch (error) {
+    console.log("Fetch reviews error:", error.message);
+    res.status(500).json({ message: "Internal Server error", success: false });
   }
 };

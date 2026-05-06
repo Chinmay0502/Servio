@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { State, City } from "country-state-city";
 import { useSelector } from "react-redux";
@@ -26,6 +26,10 @@ const addressSchema = z.object({
 const ServiceDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const taskId = location.state?.taskId; // ✅ GET TASK ID
+
   const user = useSelector((state) => state.user.value);
 
   const [service, setService] = useState(null);
@@ -48,6 +52,11 @@ const ServiceDetails = () => {
   const [selectedStateName, setSelectedStateName] = useState("");
 
   const [addressLoading, setAddressLoading] = useState(false);
+
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [reviewLoading, setReviewLoading] = useState(false);
 
   // ✅ Only 3 Slots
   const timeSlots = [
@@ -109,6 +118,7 @@ const ServiceDetails = () => {
   useEffect(() => {
     fetchServiceDetails();
     fetchAddresses();
+    fetchReviews();
   }, [id, user]);
 
   // Get Location
@@ -194,7 +204,7 @@ const ServiceDetails = () => {
         serviceId: id,
         addressId: selectedAddress,
         serviceDate,
-        preferredTime, // ✅ only one string
+        preferredTime,
       };
 
       const res = await axios.post("http://localhost:8000/api/task", payload, {
@@ -213,6 +223,56 @@ const ServiceDetails = () => {
   // Today Date (disable past booking)
   const today = new Date().toISOString().split("T")[0];
 
+  const fetchReviews = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8000/api/task/service/${id}/reviews`
+      );
+
+      setReviews(res.data.reviews || []);
+    } catch (err) {
+      setReviews([]);
+    }
+  };
+
+  const avgRating =
+    reviews.length > 0
+      ? (
+        reviews.reduce((sum, r) => sum + (r.rating || 0), 0) /
+        reviews.length
+      ).toFixed(1)
+      : 0;
+
+  const submitReview = async () => {
+    if (!rating) {
+      return toast.error("Please select rating");
+    }
+    if (!taskId) {
+      return toast.error("Invalid task for review");
+    }
+
+    try {
+      setReviewLoading(true);
+
+      const res = await axios.patch(
+        `http://localhost:8000/api/task/${taskId}/review`,
+        { rating, feedback },
+        { withCredentials: true }
+      );
+
+      toast.success(res.data.message || "Review submitted");
+
+      setRating(0);
+      setFeedback("");
+
+      fetchReviews();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to submit review");
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-400">
@@ -230,7 +290,7 @@ const ServiceDetails = () => {
   }
 
   return (
-    <section className="min-h-screen py-20 px-6">
+    <section className="min-h-screen py-5 px-6">
       <div className="max-w-6xl mx-auto">
         <Link to="/services" className="text-highlight text-sm hover:underline">
           ← Back to Services
@@ -290,10 +350,10 @@ const ServiceDetails = () => {
                 </p>
 
                 <div className="text-yellow-400 text-xs mt-1">
-                  {"★".repeat(service.rating || 4)}
-                  {"☆".repeat(5 - (service.rating || 4))}
+                  {"★".repeat(Math.round(avgRating))}
+                  {"☆".repeat(5 - Math.round(avgRating))}
                   <span className="text-gray-400 ml-2">
-                    ({service.rating || 4}.0)
+                    ({avgRating} • {reviews.length} reviews)
                   </span>
                 </div>
               </div>
@@ -398,9 +458,8 @@ const ServiceDetails = () => {
                   <input
                     {...register(field)}
                     placeholder={field}
-                    className={`w-full border ${
-                      errors[field] ? "border-red-300" : "border-white/20"
-                    } bg-[rgba(20,22,35,0.55)] rounded-xl py-2 px-3 outline-none text-sm`}
+                    className={`w-full border ${errors[field] ? "border-red-300" : "border-white/20"
+                      } bg-[rgba(20,22,35,0.55)] rounded-xl py-2 px-3 outline-none text-sm`}
                   />
                   {errors[field] && (
                     <p className="text-red-300 text-sm">
@@ -470,6 +529,78 @@ const ServiceDetails = () => {
           </div>
         </div>
       )}
+      {/* ⭐ REVIEW SECTION */}
+        <div className="mt-12">
+          <h2 className="text-xl font-bold text-white mb-4">
+            ⭐ Customer Reviews
+          </h2>
+
+          {/* Existing Reviews */}
+          {reviews.length === 0 ? (
+            <p className="text-white/60">No reviews yet</p>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-5 mb-8">
+              {reviews.map((r) => (
+                <div
+                  key={r._id}
+                  className="bg-[#11112a] border border-white/10 p-4 rounded-xl"
+                >
+                  <p className="text-white font-semibold">
+                    {r.userId?.name || "User"}
+                  </p>
+
+                  <p className="text-yellow-400 text-sm">
+                    {"★".repeat(r.rating)}
+                  </p>
+
+                  <p className="text-white/70 text-sm mt-1">
+                    {r.feedback || "No feedback"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ⭐ ADD REVIEW */}
+          {user && (
+            <div className="bg-[#11112a] border border-white/10 p-6 rounded-xl">
+              <h3 className="text-lg font-semibold text-white mb-3">
+                Give Your Review
+              </h3>
+
+              {/* Stars */}
+              <div className="flex gap-2 mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className={`text-2xl ${star <= rating ? "text-yellow-400" : "text-white/30"
+                      }`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+
+              {/* Feedback */}
+              <textarea
+                placeholder="Write feedback (optional)"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                className="w-full p-3 rounded-xl bg-black/40 border border-white/10 text-white mb-4"
+              />
+
+              <button
+                onClick={submitReview}
+                disabled={reviewLoading}
+                className="px-6 py-3 rounded-xl bg-green-600/20 text-green-300 border border-green-500/40 hover:bg-green-600/30"
+              >
+                {reviewLoading ? "Submitting..." : "Submit Review"}
+              </button>
+            </div>
+          )}
+        </div>
+
     </section>
   );
 };

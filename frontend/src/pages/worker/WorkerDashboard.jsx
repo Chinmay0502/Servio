@@ -20,7 +20,6 @@ const WorkerDashboard = () => {
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [startLoading, setStartLoading] = useState(false);
 
-  // ================= Fetch Worker Tasks =================
   const fetchWorkerTasks = async () => {
     try {
       setLoading(true);
@@ -73,7 +72,7 @@ const WorkerDashboard = () => {
       toast.success("OTP sent to customer!");
 
       setSelectedTaskId(taskId);
-      setActionType(type); // ✅ important
+      setActionType(type); 
       setOtpModal(true);
     } catch (error) {
       console.log(error.response?.data || error.message);
@@ -126,7 +125,6 @@ const WorkerDashboard = () => {
     navigate("/worker/login");
   };
 
-  // ================= Filter Tasks =================
   const activeTasks = tasks.filter(
     (t) => t.status === "WORKER_ASSIGNED" || t.status === "STARTED"
   );
@@ -135,7 +133,6 @@ const WorkerDashboard = () => {
     (t) => t.status === "COMPLETED" || t.status === "CANCELLED"
   );
 
-  // ================= Status Color =================
   const getStatusColor = (status) => {
     if (status === "WORKER_ASSIGNED") return "bg-purple-500/20 text-purple-300";
     if (status === "STARTED") return "bg-blue-500/20 text-blue-300";

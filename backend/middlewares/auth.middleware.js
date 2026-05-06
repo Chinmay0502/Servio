@@ -35,21 +35,6 @@ export const isServiceProvider = async (req, res, next) => {
     }
 }
 
-export const isWorker = async (req, res, next) => {
-    try {
-        if(req.user?.type !== "USER" || req.user?.role !== "WORKER") return res.status(403).json({
-            message: "Unauthorized access",
-            success: false
-        })
-        next();
-    } catch (error) {
-        console.error("Error checking role: ", error);
-        res.status(500).json({
-            message: "Internal server error",
-            success: false
-        })
-    }
-}
 
 export const isAdmin = async (req, res, next) => {
     try {

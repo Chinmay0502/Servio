@@ -13,7 +13,6 @@ const WorkerLogin = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // Handle Input Change
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -21,7 +20,6 @@ const WorkerLogin = () => {
     }));
   };
 
-  // Worker Login
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -42,7 +40,6 @@ const WorkerLogin = () => {
 
       toast.success(res.data.message || "Login successful!");
 
-      // ✅ Store worker info and token
       localStorage.setItem("workerToken", res.data.token);
       localStorage.setItem("workerData", JSON.stringify(res.data.worker));
 
