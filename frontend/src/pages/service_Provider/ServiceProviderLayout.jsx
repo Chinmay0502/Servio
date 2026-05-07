@@ -4,10 +4,9 @@ import { NavLink, Outlet } from "react-router-dom";
 const ServiceProviderLayout = () => {
   const linkClass = ({ isActive }) =>
     `px-4 py-3 rounded-xl transition text-sm font-medium flex items-center gap-2
-    ${
-      isActive
-        ? "bg-highlight/20 border border-highlight/40 text-highlight"
-        : "hover:bg-white/5 text-white/80"
+    ${isActive
+      ? "bg-highlight/20 border border-highlight/40 text-highlight"
+      : "hover:bg-white/5 text-white/80"
     }`;
 
   return (
@@ -42,6 +41,10 @@ const ServiceProviderLayout = () => {
 
           <NavLink to="/serviceProvider/history" className={linkClass}>
             📜 Booking History
+          </NavLink>
+
+          <NavLink to="/serviceProvider/reviews" className={linkClass}>
+            ⭐ Reviews
           </NavLink>
 
           <NavLink to="/serviceProvider/profile" className={linkClass}>

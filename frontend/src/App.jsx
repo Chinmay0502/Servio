@@ -36,6 +36,7 @@ import TaskDetails from "./pages/TaskDetails";
 import AddWorker from "./pages/service_Provider/AddWorker";
 import WorkerLogin from "./pages/worker/WorkerLogin";
 import WorkerDashboard from "./pages/worker/WorkerDashboard";
+import ProviderReviews from "./pages/service_Provider/ProviderReviews";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -159,6 +160,7 @@ const App = () => {
         <Route path="/serviceDetails/:taskId" element={<TaskDetails/>}/>
         <Route path="/worker/login" element={<WorkerLogin/>}/>
         <Route path="/worker/dashboard" element={<WorkerDashboard/>}/>
+        <Route path="/serviceProvider/reviews" element={<ProviderReviews />} />
       </Routes>
       <Footer />
     </BrowserRouter>

@@ -14,7 +14,6 @@ const TaskDetails = () => {
   const [loading, setLoading] = useState(true);
   const [assignLoading, setAssignLoading] = useState(false);
 
-  // ==================== Fetch Task Details ====================
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
@@ -38,7 +37,6 @@ const TaskDetails = () => {
     }
   };
 
-  // ==================== Fetch Provider Workers ====================
   const fetchWorkers = async () => {
     try {
       const res = await axios.get(
@@ -58,7 +56,6 @@ const TaskDetails = () => {
     }
   };
 
-  // ==================== Assign Workers API ====================
   const assignWorkers = async () => {
     if (selectedWorkers.length === 0) {
       return toast.error("Please select at least 1 worker!");
@@ -72,9 +69,6 @@ const TaskDetails = () => {
         { workerIds: selectedWorkers },
         {
           withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
 
@@ -225,11 +219,10 @@ const TaskDetails = () => {
                 <div
                   key={worker._id}
                   onClick={() => toggleWorkerSelection(worker._id)}
-                  className={`cursor-pointer flex items-center gap-4 p-4 rounded-xl border transition ${
-                    selectedWorkers.includes(worker._id)
+                  className={`cursor-pointer flex items-center gap-4 p-4 rounded-xl border transition ${selectedWorkers.includes(worker._id)
                       ? "bg-purple-600/20 border-purple-500/40"
                       : "bg-white/5 border-white/10 hover:bg-white/10"
-                  }`}
+                    }`}
                 >
                   <img
                     src={worker.image || "/Profile_Image.jpg"}

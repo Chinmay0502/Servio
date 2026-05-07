@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isServiceProvider, isWorker, verifyToken } from "../middlewares/auth.middleware.js";
+import { isServiceProvider, verifyToken } from "../middlewares/auth.middleware.js";
 
 import {
   assignWorkers,
@@ -12,7 +12,9 @@ import {
   startTask,
   generateOtp,
   getProviderTaskById,
-  cancelTask
+  cancelTask,
+  giveRatingAndFeedback,
+  getProviderReviews
 } from "../controllers/task.controller.js";
 import { verifyWorkerToken } from "../middlewares/worker.middleware.js";
 
@@ -27,7 +29,7 @@ taskRouter.delete("/cancel/:taskId", verifyToken, cancelTask)
 taskRouter.patch("/:taskId/respond", verifyToken, isServiceProvider, respondToTask);
 taskRouter.patch("/:taskId/assign", verifyToken, isServiceProvider, assignWorkers);
 taskRouter.get("/provider", verifyToken, isServiceProvider, getProviderTasks);
-taskRouter.get("/provider/:taskId", verifyToken, isServiceProvider, getProviderTaskById);
+
 
 // Worker
 taskRouter.get("/worker", verifyWorkerToken, getWorkerTasks);
@@ -35,5 +37,24 @@ taskRouter.get("/worker", verifyWorkerToken, getWorkerTasks);
 taskRouter.post("/:taskId/generate-otp", verifyWorkerToken, generateOtp);
 taskRouter.patch("/:taskId/start", verifyWorkerToken, startTask);
 taskRouter.patch("/:taskId/complete", verifyWorkerToken, completeTask);
+
+
+taskRouter.patch("/:taskId/review", verifyToken,  giveRatingAndFeedback);
+taskRouter.get("/provider/reviews", verifyToken,  isServiceProvider,  getProviderReviews);
+
+import mongoose from "mongoose";
+
+taskRouter.get(
+  "/provider/:taskId",
+  verifyToken,
+  isServiceProvider,
+  (req, res, next) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.taskId)) {
+      return res.status(400).json({ message: "Invalid Task ID" });
+    }
+    next();
+  },
+  getProviderTaskById
+);
 
 export default taskRouter;

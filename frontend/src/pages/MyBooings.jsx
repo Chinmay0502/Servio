@@ -152,17 +152,15 @@ const MyBookings = () => {
                             {/* Line */}
                             {index !== statusSteps.length - 1 && (
                               <div
-                                className={`absolute top-2 left-1/2 w-full h-[2px] ${
-                                  isCompleted ? "bg-green-500" : "bg-gray-700"
-                                }`}
+                                className={`absolute top-2 left-1/2 w-full h-[2px] ${isCompleted ? "bg-green-500" : "bg-gray-700"
+                                  }`}
                               />
                             )}
 
                             {/* Circle */}
                             <div
-                              className={`z-10 w-4 h-4 rounded-full ${
-                                isCompleted ? "bg-green-500" : "bg-gray-600"
-                              }`}
+                              className={`z-10 w-4 h-4 rounded-full ${isCompleted ? "bg-green-500" : "bg-gray-600"
+                                }`}
                             />
 
                             {/* Label */}
@@ -214,19 +212,18 @@ const MyBookings = () => {
                       {/* STATUS BADGE */}
                       <span
                         className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold
-                        ${
-                          booking.status === "PENDING"
+                        ${booking.status === "PENDING"
                             ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
                             : booking.status === "ACCEPTED"
-                            ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                            : booking.status === "WORKER_ASSIGNED"
-                            ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                            : booking.status === "STARTED"
-                            ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                            : booking.status === "COMPLETED"
-                            ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                            : "bg-red-500/20 text-red-300 border border-red-500/30"
-                        }`}
+                              ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                              : booking.status === "WORKER_ASSIGNED"
+                                ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                : booking.status === "STARTED"
+                                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                                  : booking.status === "COMPLETED"
+                                    ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                                    : "bg-red-500/20 text-red-300 border border-red-500/30"
+                          }`}
                       >
                         {booking.status}
                       </span>
@@ -287,6 +284,7 @@ const MyBookings = () => {
                   <div className="mt-5 flex gap-3">
                     <Link
                       to={`/service/${booking.serviceId?._id}`}
+                      state={{ taskId: booking._id }}   // ✅ PASS TASK ID
                       className="flex-1 text-center py-2 rounded-xl text-sm font-semibold border border-highlight text-highlight hover:bg-highlight/10 transition"
                     >
                       View Service
@@ -299,13 +297,13 @@ const MyBookings = () => {
                       "COMPLETED",
                       "CANCELLED",
                     ].includes(booking.status) && (
-                      <button
-                        onClick={() => cancelBooking(booking._id)}
-                        className="flex-1 py-2 rounded-xl text-sm font-semibold bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition"
-                      >
-                        Cancel
-                      </button>
-                    )}
+                        <button
+                          onClick={() => cancelBooking(booking._id)}
+                          className="flex-1 py-2 rounded-xl text-sm font-semibold bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition"
+                        >
+                          Cancel
+                        </button>
+                      )}
                   </div>
                 </div>
               );
