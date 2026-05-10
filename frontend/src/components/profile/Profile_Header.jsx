@@ -36,7 +36,7 @@ const Profile_Header = () => {
   if(loading) return (<LogoLoader show={loading} />)
 
   return (
-    <div className="rounded-2xl shadow-xl transition-all border border-white/20 bg-[rgba(20,22,35,0.55)] backdrop-blur-md p-6 lg:w-[22rem] lg:min-h-[35rem] flex flex-col justify-between">
+    <div className="rounded-2xl shadow-xl transition-all border border-white/20 bg-[rgba(20,22,35,0.55)] backdrop-blur-md p-6 lg:w-[20rem] lg:min-h-[35rem] flex flex-col justify-between mt-5">
       <div>
         {/* Avatar Section */}
         <div className="flex flex-col items-center">

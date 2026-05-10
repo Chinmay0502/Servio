@@ -177,7 +177,7 @@ const Address_Section = () => {
   };
 
   return (
-    <div className="rounded-2xl shadow-xl border border-white/10 bg-[rgba(20,22,35,0.55)] p-5 lg:w-[67rem] lg:mt-5">
+    <div className="rounded-2xl shadow-xl border border-white/10 bg-[rgba(20,22,35,0.55)] p-5 lg:w-[145vh] lg:mt-5">
       {/* Header */}
       <div className="flex justify-between">
         <h2 className="font-bold text-highlight text-xl">Addresses</h2>
@@ -199,7 +199,7 @@ const Address_Section = () => {
           <p>No Address Added</p>
         ) : (
           addresses.map((addr, index) => (
-            <div key={addr._id} className="border border-white/10 p-3 rounded-md">
+            <div key={addr._id} className="border border-white/10 p-3 rounded-lg">
               <div className="flex justify-between">
                 <p className="font-semibold text-primary">
                   Address {index + 1}

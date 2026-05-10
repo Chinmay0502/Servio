@@ -41,6 +41,7 @@ import WorkerLogin from "./pages/worker/WorkerLogin";
 import WorkerDashboard from "./pages/worker/WorkerDashboard";
 import ProviderReviews from "./pages/service_Provider/ProviderReviews";
 import AddressManagement from "./pages/AddressManagement";
+import MyServices from "./pages/service_Provider/MyServices";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -161,6 +162,8 @@ const App = () => {
           <Route path="requests" element={<ServiceRequests />} />
           <Route path="add-service" element={<AddService />} />
           <Route path="add-worker" element={<AddWorker/>} />
+          <Route path="reviews" element={<ProviderReviews />} />
+          <Route path="myservices" element={<MyServices/>} />
         </Route>
 
         <Route path="/search" element={<SearchResultPage />} />
@@ -169,7 +172,6 @@ const App = () => {
         <Route path="/serviceDetails/:taskId" element={<TaskDetails/>}/>
         <Route path="/worker/login" element={<WorkerLogin/>}/>
         <Route path="/worker/dashboard" element={<WorkerDashboard/>}/>
-        <Route path="/serviceProvider/reviews" element={<ProviderReviews />} />
       </Routes>
       <Footer />
     </BrowserRouter>

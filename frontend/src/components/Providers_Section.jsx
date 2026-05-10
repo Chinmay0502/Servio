@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 const Providers_Section = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [servicesData, setServicesData] = useState([]);
+  const [ratingsMap, setRatingsMap] = useState({});
   const [loading, setLoading] = useState(false);
 
   const filterButtons = [
@@ -13,6 +14,12 @@ const Providers_Section = () => {
     { label: "Plumbing", value: "plumbing" },
     { label: "Painting", value: "painting" },
     { label: "AC Repair", value: "ac" },
+
+    // ⭐ Rating Filters
+    { label: "⭐ 5 Star", value: "rating5" },
+    { label: "⭐ 4+ Star", value: "rating4" },
+    { label: "⭐ 3+ Star", value: "rating3" },
+
     { label: "Top Rated", value: "topRated" },
     { label: "Price: Low → High", value: "lowHigh" },
     { label: "Price: High → Low", value: "highLow" },
@@ -21,43 +28,91 @@ const Providers_Section = () => {
   // Fetch Services
   const fetchServices = async () => {
     try {
-      setLoading(true);
-
       const res = await axios.get(
-        "http://localhost:8000/api/services/get-all-services",
+        "http://localhost:8000/api/services/get-all-services"
       );
-      console.log(res.data.services);
       setServicesData(res.data.services || []);
     } catch (error) {
-      console.log(error.response?.data);
-    } finally {
-      setLoading(false);
+      console.log(error.response?.data || error.message);
+    }
+  };
+
+  // Fetch Average Ratings of all services from Task model
+  const fetchRatings = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/task/service/average-ratings"
+      );
+
+      const map = {};
+      res.data.ratings.forEach((item) => {
+        map[item._id] = item.avgRating;
+      });
+
+      setRatingsMap(map);
+    } catch (error) {
+      console.log(error.response?.data || error.message);
     }
   };
 
   useEffect(() => {
-    fetchServices();
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        await fetchServices();
+        await fetchRatings();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   // Filter + Sort Services
   const getFilteredServices = () => {
-    let filtered = [...servicesData];
+    // merge ratings into services
+    let filtered = servicesData.map((service) => ({
+      ...service,
+      rating: ratingsMap[service._id] || 0,
+    }));
 
+    // Category filter
     if (
       activeFilter !== "all" &&
       activeFilter !== "topRated" &&
       activeFilter !== "lowHigh" &&
-      activeFilter !== "highLow"
+      activeFilter !== "highLow" &&
+      activeFilter !== "rating5" &&
+      activeFilter !== "rating4" &&
+      activeFilter !== "rating3"
     ) {
       filtered = filtered.filter(
-        (s) => s.categoryId?.name?.toLowerCase() === activeFilter,
+        (s) => s.categoryId?.name?.toLowerCase() === activeFilter
       );
     }
 
-    if (activeFilter === "topRated") {
-      filtered = filtered.filter((s) => (s.rating || 0) >= 5);
+    // ⭐ Rating filters
+    if (activeFilter === "rating5") {
+      filtered = filtered.filter((s) => s.rating >= 5);
     }
 
+    if (activeFilter === "rating4") {
+      filtered = filtered.filter((s) => s.rating >= 4);
+    }
+
+    if (activeFilter === "rating3") {
+      filtered = filtered.filter((s) => s.rating >= 3);
+    }
+
+    // Top Rated (same as rating5)
+    if (activeFilter === "topRated") {
+      filtered = filtered.filter((s) => s.rating >= 5);
+    }
+
+    // Sorting
     if (activeFilter === "lowHigh") {
       filtered = filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
     }
@@ -69,7 +124,8 @@ const Providers_Section = () => {
     return filtered;
   };
 
-  const services = getFilteredServices();
+  // show only 4 services
+  const services = getFilteredServices().slice(0, 4);
 
   return (
     <section id="providers" className="py-24 px-6">
@@ -131,13 +187,13 @@ const Providers_Section = () => {
               key={service._id}
               className="bg-[#12121f] border border-[#6c3be8]/25 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_16px_40px_rgba(108,59,232,.15)]"
             >
-              {/* 🔥 TOP IMAGE SLIDER */}
+              {/* TOP IMAGE SLIDER */}
               {service.images && service.images.length > 0 ? (
                 <div className="w-full h-44 overflow-x-auto flex snap-x snap-mandatory scroll-smooth no-scrollbar">
                   {service.images.map((img, index) => (
                     <img
                       key={index}
-                      src={img?.url} // ✅ cloudinary url
+                      src={img?.url}
                       alt={`service-${index}`}
                       className="w-full h-44 object-cover flex-shrink-0 snap-center"
                     />
@@ -174,8 +230,11 @@ const Providers_Section = () => {
                     </div>
 
                     <div className="text-yellow-400 text-xs mt-0.5">
-                      {"★".repeat(service.rating || 4)}
-                      {"☆".repeat(5 - (service.rating || 4))}
+                      {"★".repeat(Math.round(service.rating || 0))}
+                      {"☆".repeat(5 - Math.round(service.rating || 0))}
+                      <span className="text-gray-400 ml-2">
+                        ({service.rating.toFixed(1)})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -201,10 +260,7 @@ const Providers_Section = () => {
                   </p>
                 </div>
 
-                {/* Button
-                <button className="w-full border border-highlight text-highlight rounded-xl py-2 text-xs font-semibold hover:bg-highlight/10 hover:text-white transition-colors cursor-pointer">
-                  Book Now
-                </button> */}
+                {/* Book Now Button */}
                 <Link
                   to={`/service/${service._id}`}
                   className="block w-full text-center border border-highlight text-highlight rounded-xl py-2 text-xs font-semibold hover:bg-highlight/10 hover:text-white transition-colors cursor-pointer"

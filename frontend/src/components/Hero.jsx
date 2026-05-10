@@ -1,5 +1,6 @@
 import React from "react";
 import { FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -12,7 +13,7 @@ const Hero = () => {
             <div className="text-sm md:text-xl font-[Roobert] text-gray-400">Find verified local professionals, book instantly, and track your service in real time with Servio.</div>
             <div><span className="text-highlight">10,000+</span> Happy Customers Using Servio Every Month</div>
             <div className="bg-highlight md:w-[10rem] text-sm px-3 py-2 rounded-md font-semibold cursor-pointer transition-all duration-300 hover:shadow-[0_0_25px_8px_rgba(233,30,99,0.6)] flex justify-center items-center gap-2 group">
-              <button className="cursor-pointer">Get Service Now </button>
+              <Link to={"/services"} className="cursor-pointer">Get Service Now </Link>
               <div className=" hidden group-hover:flex">
                 <FaArrowRight className="text-[0.8rem]"/>
               </div>

@@ -15,7 +15,8 @@ import {
   cancelTask,
   giveRatingAndFeedback,
   getProviderReviews,
-  getServiceReviews
+  getServiceReviews,
+  getAllServiceAverageRatings
 } from "../controllers/task.controller.js";
 import { verifyWorkerToken } from "../middlewares/worker.middleware.js";
 
@@ -43,7 +44,7 @@ taskRouter.patch("/:taskId/complete", verifyWorkerToken, completeTask);
 taskRouter.patch("/:taskId/review", verifyToken,  giveRatingAndFeedback);
 taskRouter.get("/provider/reviews", verifyToken,  isServiceProvider,  getProviderReviews);
 taskRouter.get("/service/:serviceId/reviews", getServiceReviews);
-
+taskRouter.get("/service/average-ratings", getAllServiceAverageRatings);
 import mongoose from "mongoose";
 
 taskRouter.get(

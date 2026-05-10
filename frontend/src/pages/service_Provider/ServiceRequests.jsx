@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const ServiceRequests = () => {
   const token = useSelector((state) => state.user.token);
@@ -70,7 +71,7 @@ const ServiceRequests = () => {
 
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                    task.status
+                    task.status,
                   )}`}
                 >
                   {task.status}
@@ -107,9 +108,7 @@ const ServiceRequests = () => {
 
                 <p>
                   ⏰ Time:{" "}
-                  {task.preferredTime?.length > 0
-                    ? task.preferredTime
-                    : "N/A"}
+                  {task.preferredTime?.length > 0 ? task.preferredTime : "N/A"}
                 </p>
 
                 <p>📍 City: {task.addressId?.city || "N/A"}</p>
@@ -117,9 +116,12 @@ const ServiceRequests = () => {
 
               {/* Action */}
               <div className="mt-5 flex justify-end gap-3">
-                <button className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition text-sm">
-                  View Details
-                </button>
+                <Link
+                  to={`/serviceDetails/${task._id}`}
+                  className="px-4 py-2 rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/30 hover:bg-purple-600/30 transition"
+                >
+                  View
+                </Link>
               </div>
             </div>
           ))}
