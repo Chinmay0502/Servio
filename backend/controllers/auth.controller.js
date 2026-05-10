@@ -45,7 +45,7 @@ export const userRegister = async (req, res) => {
                 phone: newUser.phone,
                 role: newUser.role,
                 status: newUser.status,
-                image: newUser.image.url,
+                image: newUser.image?.url,
                 gender: newUser.gender
             }
         })
@@ -124,7 +124,7 @@ export const userLogin = async (req, res) => {
                 phone: user.phone,
                 role: user.role,
                 status: user.status,
-                image: user.image.url,
+                image: user.image?.url,
                 gender: user.gender,
                 aadhaarNo: user.aadhaarNo
             }
@@ -183,7 +183,7 @@ export const userProfile = async (req, res) => {
                 phone: user.phone,
                 role: user.role,
                 status: user.status,
-                image: user.image.url,
+                image: user.image?.url,
                 gender: user.gender,
                 aadhaarNo: user.aadhaarNo
             }
@@ -242,7 +242,7 @@ export const updateProfile = async (req, res) => {
                 phone: user.phone,
                 role: user.role,
                 status: user.status,
-                image: user.image.url,
+                image: user.image?.url,
                 gender: user.gender,
                 aadhaarNo: user.aadhaarNo
             }

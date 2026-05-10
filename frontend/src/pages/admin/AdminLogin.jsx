@@ -23,7 +23,7 @@ const AdminLogin = () => {
         { withCredentials: true },
       );
       toast.success(res.data.message || "Admin  logged in successfully");
-      navigate("/admin/adminDashboard");
+      navigate("/admin/dashboard");
       reset();
     } catch (error) {
       console.log(error);

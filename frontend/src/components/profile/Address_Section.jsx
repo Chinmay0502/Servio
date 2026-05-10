@@ -55,7 +55,7 @@ const Address_Section = () => {
 
   const fetchAddresses = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/address");
+      const res = await privateAxios.get("/address");
       dispatch(setAddresses(res.data.addresses || []));
     } catch (err) {
       if (err.response?.status === 404) {
@@ -177,7 +177,7 @@ const Address_Section = () => {
   };
 
   return (
-    <div className="rounded-2xl shadow-xl border border-white/20 bg-[rgba(20,22,35,0.55)] p-5 lg:w-[67rem] lg:mt-5">
+    <div className="rounded-2xl shadow-xl border border-white/10 bg-[rgba(20,22,35,0.55)] p-5 lg:w-[67rem] lg:mt-5">
       {/* Header */}
       <div className="flex justify-between">
         <h2 className="font-bold text-highlight text-xl">Addresses</h2>
@@ -194,12 +194,12 @@ const Address_Section = () => {
       </div>
 
       {/* List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-3">
         {addresses.length === 0 ? (
           <p>No Address Added</p>
         ) : (
           addresses.map((addr, index) => (
-            <div key={addr._id} className="border p-3 rounded-md">
+            <div key={addr._id} className="border border-white/10 p-3 rounded-md">
               <div className="flex justify-between">
                 <p className="font-semibold text-primary">
                   Address {index + 1}

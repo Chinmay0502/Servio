@@ -28,7 +28,6 @@ const ServiceDetails = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const taskId = location.state?.taskId; // ✅ GET TASK ID
 
   const user = useSelector((state) => state.user.value);
 
@@ -54,9 +53,6 @@ const ServiceDetails = () => {
   const [addressLoading, setAddressLoading] = useState(false);
 
   const [reviews, setReviews] = useState([]);
-  const [rating, setRating] = useState(0);
-  const [feedback, setFeedback] = useState("");
-  const [reviewLoading, setReviewLoading] = useState(false);
 
   // ✅ Only 3 Slots
   const timeSlots = [
@@ -236,42 +232,14 @@ const ServiceDetails = () => {
   };
 
   const avgRating =
-    reviews.length > 0
-      ? (
-        reviews.reduce((sum, r) => sum + (r.rating || 0), 0) /
+  reviews.length > 0
+    ? (
+        reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) /
         reviews.length
-      ).toFixed(1)
-      : 0;
+      )
+    : 0;
 
-  const submitReview = async () => {
-    if (!rating) {
-      return toast.error("Please select rating");
-    }
-    if (!taskId) {
-      return toast.error("Invalid task for review");
-    }
-
-    try {
-      setReviewLoading(true);
-
-      const res = await axios.patch(
-        `http://localhost:8000/api/task/${taskId}/review`,
-        { rating, feedback },
-        { withCredentials: true }
-      );
-
-      toast.success(res.data.message || "Review submitted");
-
-      setRating(0);
-      setFeedback("");
-
-      fetchReviews();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to submit review");
-    } finally {
-      setReviewLoading(false);
-    }
-  };
+const avgRatingDisplay = avgRating.toFixed(1);
 
   if (loading) {
     return (
@@ -290,317 +258,280 @@ const ServiceDetails = () => {
   }
 
   return (
-    <section className="min-h-screen py-5 px-6">
-      <div className="max-w-6xl mx-auto">
-        <Link to="/services" className="text-highlight text-sm hover:underline">
+    <section className="min-h-screen py-8 px-6 bg-[#010314]">
+      <div className="max-w-7xl mx-auto">
+        <Link to="/services" className="text-highlight text-sm hover:underline flex items-center gap-2 mb-6">
           ← Back to Services
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-8">
-          {/* Images */}
-          <div className="bg-[#12121f] border border-[#6c3be8]/25 rounded-2xl p-4">
-            {service.images?.length > 0 ? (
-              <div className="flex overflow-x-auto gap-3 snap-x snap-mandatory scroll-smooth no-scrollbar">
-                {service.images.map((img, index) => (
-                  <img
-                    key={index}
-                    src={img.url}
-                    alt="service"
-                    className="w-full h-96 object-cover rounded-xl flex-shrink-0 snap-center"
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="w-full h-96 flex items-center justify-center text-gray-500">
-                No Images Available
-              </div>
-            )}
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-          {/* Details + Booking */}
-          <div className="bg-[#12121f] border border-[#6c3be8]/25 rounded-2xl p-8">
-            <h1 className="text-2xl font-bold mb-3">{service.name}</h1>
+          {/* LEFT COLUMN: Images, Details, Reviews */}
+          <div className="lg:col-span-2 space-y-8">
 
-            <p className="text-gray-400 text-sm mb-5">{service.description}</p>
+            {/* Title & Description */}
+            <div>
+              <h1 className="text-4xl font-extrabold text-white mb-3">{service.name}</h1>
+              <p className="text-gray-400 text-base leading-relaxed">{service.description}</p>
+            </div>
 
-            <p className="text-white font-bold text-xl mb-6">
-              ₹{service.price}{" "}
-              <span className="text-gray-500 text-sm font-normal">/ visit</span>
-            </p>
+            {/* Images */}
+            <div className="bg-[#12121f] border border-white/10 rounded-2xl p-4 shadow-xl">
+              {service.images?.length > 0 ? (
+                <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory scroll-smooth custom-scroll pb-2">
+                  {service.images.map((img, index) => (
+                    <img
+                      key={index}
+                      src={img.url}
+                      alt="service"
+                      className="w-full md:w-4/5 h-80 object-cover rounded-xl flex-shrink-0 snap-center border border-white/5"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="w-full h-64 flex items-center justify-center text-gray-500 bg-black/20 rounded-xl">
+                  No Images Available
+                </div>
+              )}
+            </div>
 
             {/* Provider Details */}
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-black/30 border border-white/10 mb-6">
-              <div className="w-14 h-14 rounded-xl overflow-hidden ring-2 ring-white/10">
-                <img
-                  src={service.providerId?.image?.url || "/Profile_Image.jpg"}
-                  alt="provider"
-                  className="w-full h-full object-cover"
+            <div className="bg-[#12121f] border border-white/10 rounded-2xl p-6 shadow-xl">
+              <h3 className="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">Service Provider</h3>
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-full overflow-hidden ring-2 ring-highlight shadow-lg shadow-highlight/20">
+                  <img
+                    src={service.providerId?.image?.url || "/Profile_Image.jpg"}
+                    alt="provider"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-lg">
+                    {service.providerId?.name || "Unknown Provider"}
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    {service.providerId?.email || "No email available"}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="text-yellow-400 text-sm">
+                      {"★".repeat(Math.round(avgRating))}
+                      {"☆".repeat(5 - Math.round(avgRating))}
+                    </div>
+                    <span className="text-gray-400 text-xs">
+                      ({avgRating} • {reviews.length} reviews)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Reviews Section */}
+            <div className="bg-[#12121f] border border-white/10 rounded-2xl p-6 shadow-xl">
+              <h2 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">
+                Customer Reviews
+              </h2>
+
+              {reviews.length === 0 ? (
+                <p className="text-gray-400 italic">No reviews yet. Be the first to review after booking!</p>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {reviews.map((r) => (
+                    <div
+                      key={r._id}
+                      className="bg-black/20 border border-white/5 p-4 rounded-xl hover:border-white/10 transition-all"
+                    >
+                      <p className="text-white font-semibold">{r.userId?.name || "User"}</p>
+                      <p className="text-yellow-400 text-sm my-1">{"★".repeat(r.rating)}</p>
+                      <p className="text-gray-400 text-sm">{r.feedback || "No written feedback provided."}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Sticky Booking Form */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 bg-[rgba(20,22,35,0.7)] backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl">
+              <h2 className="text-2xl font-bold text-white mb-2">Book Service</h2>
+
+              <div className="flex items-baseline gap-2 mb-6 pb-6 border-b border-white/10">
+                <span className="text-3xl font-extrabold text-green-400">₹{service.price}</span>
+                <span className="text-gray-400">/ session</span>
+              </div>
+
+              {/* Address Selection */}
+              <div className="mb-5">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-sm font-semibold text-gray-300">Service Location</label>
+                  <button
+                    onClick={() => {
+                      if (!user) {
+                        toast.error("Please login first to add address");
+                        navigate("/login");
+                        return;
+                      }
+                      setShowModal(true);
+                    }}
+                    className="text-highlight text-xs font-bold hover:text-primary transition-colors"
+                  >
+                    + ADD NEW
+                  </button>
+                </div>
+
+                {addresses.length === 0 ? (
+                  <div className="text-sm text-gray-500 p-3 bg-black/20 rounded-xl border border-white/5 text-center">
+                    No addresses found. Add one above.
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-40 overflow-y-auto custom-scroll pr-2">
+                    {addresses.map((addr) => (
+                      <div
+                        key={addr._id}
+                        onClick={() => setSelectedAddress(addr._id)}
+                        className={`cursor-pointer p-3 rounded-xl border transition-all ${selectedAddress === addr._id
+                            ? 'border-highlight bg-highlight/10'
+                            : 'border-white/10 bg-black/40 hover:border-white/30'
+                          }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={`w-3 h-3 rounded-full border border-white/50 flex items-center justify-center ${selectedAddress === addr._id ? 'border-highlight' : ''}`}>
+                            {selectedAddress === addr._id && <div className="w-1.5 h-1.5 bg-highlight rounded-full"></div>}
+                          </div>
+                          <p className="text-sm text-white font-medium line-clamp-1">
+                            {addr.houseNo}, {addr.area}
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-400 ml-5 mt-1 line-clamp-1">{addr.city} - {addr.pincode}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Date Selection */}
+              <div className="mb-5">
+                <label className="text-sm font-semibold text-gray-300 block mb-2">Select Date</label>
+                <input
+                  type="date"
+                  min={today}
+                  value={serviceDate}
+                  onChange={(e) => setServiceDate(e.target.value)}
+                  className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-xl text-sm text-white outline-none focus:border-highlight transition-all cursor-pointer"
                 />
               </div>
 
-              <div className="flex-1">
-                <p className="text-sm text-gray-400">Service Provider</p>
-
-                <h3 className="text-white font-semibold text-base">
-                  {service.providerId?.name || "Unknown Provider"}
-                </h3>
-
-                <p className="text-xs text-gray-400">
-                  {service.providerId?.email || "No email available"}
-                </p>
-
-                <div className="text-yellow-400 text-xs mt-1">
-                  {"★".repeat(Math.round(avgRating))}
-                  {"☆".repeat(5 - Math.round(avgRating))}
-                  <span className="text-gray-400 ml-2">
-                    ({avgRating} • {reviews.length} reviews)
-                  </span>
+              {/* Time Slot Selection */}
+              <div className="mb-6">
+                <label className="text-sm font-semibold text-gray-300 block mb-2">Preferred Time</label>
+                <div className="grid grid-cols-1 gap-2">
+                  {timeSlots.map((slot) => (
+                    <button
+                      key={slot.value}
+                      onClick={() => setPreferredTime(slot.value)}
+                      className={`text-sm py-2.5 px-3 rounded-xl border transition-all text-left ${preferredTime === slot.value
+                          ? "bg-highlight/20 border-highlight text-highlight font-bold"
+                          : "bg-black/40 border-white/10 text-gray-300 hover:border-white/30 hover:bg-white/5"
+                        }`}
+                    >
+                      {slot.label}
+                    </button>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            {/* Address */}
-            <label className="text-sm text-gray-300">Select Address</label>
-            <select
-              value={selectedAddress}
-              onChange={(e) => setSelectedAddress(e.target.value)}
-              className="w-full mt-2 mb-3 bg-black/40 border border-white/10 px-4 py-3 rounded-xl text-sm outline-none"
-            >
-              <option value="">-- Select Address --</option>
-
-              {addresses.map((addr) => (
-                <option key={addr._id} value={addr._id}>
-                  {addr.houseNo}, {addr.area}, {addr.city} - {addr.pincode}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={() => {
-                if (!user) {
-                  toast.error("Please login first to add address");
-                  navigate("/login");
-                  return;
-                }
-                setShowModal(true);
-              }}
-              className="text-highlight text-xs hover:underline cursor-pointer"
-            >
-              + Add New Address
-            </button>
-
-            {/* Date */}
-            <div className="mt-4">
-              <label className="text-sm text-gray-300">Service Date</label>
-              <input
-                type="date"
-                min={today}
-                value={serviceDate}
-                onChange={(e) => setServiceDate(e.target.value)}
-                className="w-full mt-2 bg-black/40 border border-white/10 px-4 py-3 rounded-xl text-sm outline-none"
-              />
-            </div>
-
-            {/* Preferred Slot */}
-            <div className="mt-4">
-              <label className="text-sm text-gray-300">
-                Preferred Time Slot
-              </label>
-
-              <select
-                value={preferredTime}
-                onChange={(e) => setPreferredTime(e.target.value)}
-                className="w-full mt-2 bg-black/40 border border-white/10 px-4 py-3 rounded-xl text-sm outline-none"
+              {/* Book Button */}
+              <button
+                onClick={handleBooking}
+                disabled={bookingLoading}
+                className="w-full bg-highlight hover:bg-primary text-white py-3.5 rounded-xl font-bold text-lg shadow-lg shadow-highlight/20 transition-all hover:shadow-highlight/40 disabled:opacity-50 disabled:shadow-none"
               >
-                <option value="">-- Select Slot --</option>
-                {timeSlots.map((slot) => (
-                  <option key={slot.value} value={slot.value}>
-                    {slot.label}
-                  </option>
-                ))}
-              </select>
-
-              {preferredTime && (
-                <p className="text-xs text-gray-400 mt-2">
-                  Selected Slot:{" "}
-                  <span className="text-highlight font-semibold">
-                    {preferredTime}
-                  </span>
-                </p>
-              )}
+                {bookingLoading ? "Processing..." : "Confirm Booking"}
+              </button>
             </div>
-
-            <button
-              onClick={handleBooking}
-              disabled={bookingLoading}
-              className="w-full mt-6 bg-highlight text-white py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-50"
-            >
-              {bookingLoading ? "Booking..." : "Confirm Booking"}
-            </button>
           </div>
         </div>
+
       </div>
 
-      {/* 🔥 ADDRESS MODAL */}
+      {/* Address Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 px-4">
-          <div className="bg-[rgba(20,22,35,0.95)] p-6 rounded-xl w-full max-w-lg border border-white/20">
-            <h2 className="text-lg font-bold mb-4 text-highlight">
-              Add Address
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 px-4">
+          <div className="bg-[#0d0d1a] p-6 rounded-2xl w-full max-w-lg border border-white/10 shadow-2xl">
+            <h2 className="text-xl font-bold mb-4 text-highlight border-b border-white/10 pb-3">
+              Add New Address
             </h2>
 
-            <form
-              onSubmit={handleSubmit(onSubmitAddress)}
-              className="space-y-3"
-            >
-              {["houseNo", "street", "area", "pincode"].map((field) => (
-                <div key={field} className="flex flex-col gap-1">
-                  <input
-                    {...register(field)}
-                    placeholder={field}
-                    className={`w-full border ${errors[field] ? "border-red-300" : "border-white/20"
-                      } bg-[rgba(20,22,35,0.55)] rounded-xl py-2 px-3 outline-none text-sm`}
-                  />
-                  {errors[field] && (
-                    <p className="text-red-300 text-sm">
-                      {errors[field].message}
-                    </p>
-                  )}
-                </div>
-              ))}
+            <form onSubmit={handleSubmit(onSubmitAddress)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                {["houseNo", "street", "area", "pincode"].map((field) => (
+                  <div key={field} className="flex flex-col gap-1">
+                    <input
+                      {...register(field)}
+                      placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                      className={`w-full border ${errors[field] ? "border-red-400" : "border-white/10"} bg-black/40 rounded-xl py-2 px-3 outline-none text-sm focus:border-highlight transition-colors`}
+                    />
+                  </div>
+                ))}
+              </div>
 
               <textarea
                 {...register("landmark")}
-                placeholder="landmark"
-                className="w-full p-2 border border-white/20 rounded-xl bg-transparent"
+                placeholder="Landmark (Optional)"
+                className="w-full p-3 border border-white/10 rounded-xl bg-black/40 text-sm outline-none focus:border-highlight transition-colors resize-none"
+                rows="2"
               />
 
-              {/* State */}
-              <select
-                value={selectedStateCode}
-                onChange={handleStateChange}
-                className="w-full border border-white/20 bg-primary rounded-xl py-2 px-3 text-white appearance-none"
-              >
-                <option value="">Select State</option>
-                {states.map((s) => (
-                  <option key={s.isoCode} value={s.isoCode}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-              {errors.state && (
-                <p className="text-red-300 text-sm">{errors.state.message}</p>
-              )}
+              <div className="grid grid-cols-2 gap-3">
+                {/* State */}
+                <select
+                  value={selectedStateCode}
+                  onChange={handleStateChange}
+                  className="w-full border border-white/10 bg-black/40 rounded-xl py-2 px-3 text-white appearance-none text-sm outline-none focus:border-highlight transition-colors cursor-pointer"
+                >
+                  <option value="">Select State</option>
+                  {states.map((s) => (
+                    <option key={s.isoCode} value={s.isoCode}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
 
-              {/* City */}
-              <select
-                {...register("city")}
-                disabled={!selectedStateCode}
-                className="w-full border border-white/20 bg-primary rounded-xl py-2 px-3 text-white appearance-none disabled:opacity-50"
-              >
-                <option value="">Select City</option>
-                {cities.map((c) => (
-                  <option key={c.name}>{c.name}</option>
-                ))}
-              </select>
-              {errors.city && (
-                <p className="text-red-300 text-sm">{errors.city.message}</p>
-              )}
+                {/* City */}
+                <select
+                  {...register("city")}
+                  disabled={!selectedStateCode}
+                  className="w-full border border-white/10 bg-black/40 rounded-xl py-2 px-3 text-white appearance-none disabled:opacity-50 text-sm outline-none focus:border-highlight transition-colors cursor-pointer"
+                >
+                  <option value="">Select City</option>
+                  {cities.map((c) => (
+                    <option key={c.name}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
 
-              {/* Buttons */}
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-2">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-600 rounded-xl text-sm font-semibold cursor-pointer"
+                  className="px-5 py-2 bg-transparent border border-white/20 hover:bg-white/5 rounded-xl text-sm font-semibold transition-all"
                 >
                   Cancel
                 </button>
-
                 <button
                   type="submit"
                   disabled={addressLoading}
-                  className="px-4 py-2 bg-primary rounded-xl text-sm font-semibold cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-highlight hover:bg-primary rounded-xl text-sm font-bold transition-all disabled:opacity-50"
                 >
-                  {addressLoading ? "Saving..." : "Save"}
+                  {addressLoading ? "Saving..." : "Save Address"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-      {/* ⭐ REVIEW SECTION */}
-        <div className="mt-12">
-          <h2 className="text-xl font-bold text-white mb-4">
-            ⭐ Customer Reviews
-          </h2>
-
-          {/* Existing Reviews */}
-          {reviews.length === 0 ? (
-            <p className="text-white/60">No reviews yet</p>
-          ) : (
-            <div className="grid md:grid-cols-2 gap-5 mb-8">
-              {reviews.map((r) => (
-                <div
-                  key={r._id}
-                  className="bg-[#11112a] border border-white/10 p-4 rounded-xl"
-                >
-                  <p className="text-white font-semibold">
-                    {r.userId?.name || "User"}
-                  </p>
-
-                  <p className="text-yellow-400 text-sm">
-                    {"★".repeat(r.rating)}
-                  </p>
-
-                  <p className="text-white/70 text-sm mt-1">
-                    {r.feedback || "No feedback"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* ⭐ ADD REVIEW */}
-          {user && (
-            <div className="bg-[#11112a] border border-white/10 p-6 rounded-xl">
-              <h3 className="text-lg font-semibold text-white mb-3">
-                Give Your Review
-              </h3>
-
-              {/* Stars */}
-              <div className="flex gap-2 mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    onClick={() => setRating(star)}
-                    className={`text-2xl ${star <= rating ? "text-yellow-400" : "text-white/30"
-                      }`}
-                  >
-                    ★
-                  </button>
-                ))}
-              </div>
-
-              {/* Feedback */}
-              <textarea
-                placeholder="Write feedback (optional)"
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-                className="w-full p-3 rounded-xl bg-black/40 border border-white/10 text-white mb-4"
-              />
-
-              <button
-                onClick={submitReview}
-                disabled={reviewLoading}
-                className="px-6 py-3 rounded-xl bg-green-600/20 text-green-300 border border-green-500/40 hover:bg-green-600/30"
-              >
-                {reviewLoading ? "Submitting..." : "Submit Review"}
-              </button>
-            </div>
-          )}
-        </div>
-
     </section>
   );
 };

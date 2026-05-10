@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Services = () => {
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
 
@@ -104,6 +106,7 @@ const Services = () => {
           {filteredServices.map((service) => (
             <div
               key={service._id}
+              onClick={() => navigate(`/service/${service._id}`)}
               className="bg-[#12121f] border border-[#6c3be8]/25 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:border-primary hover:shadow-primary"
             >
               {service.images && service.images.length > 0 ? (

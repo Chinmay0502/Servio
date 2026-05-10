@@ -70,10 +70,15 @@ const Navbar = ({ location, getLocation, openDropdown, setOpenDropdown }) => {
               </h2>
               <button
                 onClick={getLocation}
-                className="bg-primary font-[Roobert] text-sm rounded-md px-3 py-1 hover:bg-primary cursor-pointer"
+                className="bg-primary font-[Roobert] text-sm rounded-md px-3 py-2 mb-2 w-full hover:opacity-90 cursor-pointer transition-all"
               >
                 Detect My Location
               </button>
+              {user && (
+                <Link to="/profile/addresses" className="block text-center border border-white/20 font-[Roobert] text-sm rounded-md px-3 py-2 hover:bg-white/5 transition-all cursor-pointer w-full">
+                  Manage Saved Addresses
+                </Link>
+              )}
             </div>
           ) : null}
         </div>

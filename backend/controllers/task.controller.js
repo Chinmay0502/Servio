@@ -1,5 +1,6 @@
 import Task from "../models/task.model.js";
 import { Service } from "../models/service.model.js";
+import mongoose from "mongoose";
 import { generateOtpEmailOption, sendEmail } from "../lib/sendMail.js";
 import Otp from "../models/otp.model.js";
 
@@ -56,7 +57,7 @@ export const cancelTask = async (req, res) => {
       });
     }
 
-    if (task.userId.toString() !== req.user.id.toString()) {
+    if (!task.userId || task.userId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "Unauthorized access",
         success: false,
@@ -102,7 +103,7 @@ export const respondToTask = async (req, res) => {
       });
     }
 
-    if (task.providerId.toString() !== req.user.id.toString()) {
+    if (!task.providerId || task.providerId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "Unauthorized access",
         success: false
@@ -167,7 +168,7 @@ export const assignWorkers = async (req, res) => {
       });
     }
 
-    if (task.providerId.toString() !== req.user.id.toString()) {
+    if (!task.providerId || task.providerId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "Unauthorized access",
         success: false,
@@ -192,20 +193,32 @@ export const assignWorkers = async (req, res) => {
         success: false,
       });
     }
-    task.workers = workerIds;
-    task.status = "WORKER_ASSIGNED";
-    await task.save();
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      task.workers = workerIds;
+      task.status = "WORKER_ASSIGNED";
+      await task.save({ session });
 
-    await Worker.updateMany(
-      { _id: { $in: workerIds } },
-      { $addToSet: { taskIds: taskId } }
-    );
+      await Worker.updateMany(
+        { _id: { $in: workerIds } },
+        { $addToSet: { taskIds: taskId } },
+        { session }
+      );
 
-    return res.status(200).json({
-      message: "Workers assigned successfully",
-      task,
-      success: true,
-    });
+      await session.commitTransaction();
+      session.endSession();
+
+      return res.status(200).json({
+        message: "Workers assigned successfully",
+        task,
+        success: true,
+      });
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
   } catch (error) {
     console.error("Error assigning workers to task: ", error);
     return res.status(500).json({
@@ -306,7 +319,7 @@ export const getProviderTaskById = async (req, res) => {
       });
     }
 
-    if (task.providerId.toString() !== req.user.id.toString()) {
+    if (!task.providerId || task.providerId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "Unauthorized access",
         success: false,
@@ -364,10 +377,17 @@ export const generateOtp = async (req, res) => {
       expiry,
     });
 
+    if (!task.userId || !task.userId.email) {
+      return res.status(400).json({
+        message: "User email not found for this task",
+        success: false
+      });
+    }
+
     const emailOptions = generateOtpEmailOption(
       task.userId.email,
       otp,
-      task.serviceId.name,
+      task.serviceId?.name || "Service",
     );
 
     await sendEmail(emailOptions);
@@ -602,6 +622,26 @@ export const getProviderReviews = async (req, res) => {
     res.status(200).json({ reviews: tasks, success: true, message: "Reviews fetched successfully" });
   } catch (error) {
     console.log("Fetch reviews error:", error.message);
+    res.status(500).json({ message: "Internal Server error", success: false });
+  }
+};
+
+export const getServiceReviews = async (req, res) => {
+  try {
+    const { serviceId } = req.params;
+
+    const reviews = await Task.find({
+      serviceId,
+      status: "COMPLETED",
+      rating: { $exists: true, $ne: null },
+    })
+      .populate("userId", "name image")
+      .select("rating feedback createdAt userId")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ reviews, success: true, message: "Service reviews fetched successfully" });
+  } catch (error) {
+    console.log("Fetch service reviews error:", error.message);
     res.status(500).json({ message: "Internal Server error", success: false });
   }
 };

@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 import Admin from "../models/admin.model.js";
 import User from "../models/user.model.js";
@@ -11,6 +12,30 @@ import ServiceProviderRequest from "../models/serviceProviderRequests.model.js";
 import {
     Service
 } from "../models/service.model.js";
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const adminId = req.user.id;
+        const admin = await Admin.findById(adminId);
+        if (!admin) return res.status(403).json({
+            message: "Unauthorized access",
+            success: false
+        });
+
+        const users = await User.find().select("-password").sort({ createdAt: -1 });
+        return res.status(200).json({
+            success: true,
+            users
+        });
+    } catch (error) {
+        console.error("Error fetching users: ", error);
+        res.status(500).json({
+            message: "Internal server error",
+            success: false
+        });
+    }
+};
+
 export const addAdmin = async (req, res) => {
     const {
         userName,
@@ -301,39 +326,48 @@ export const changeServiceRole = async (req, res) => {
             });
         }
 
-        // ACCEPT LOGIC
-        if (decision === "ACCEPT") {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            // ACCEPT LOGIC
+            if (decision === "ACCEPT") {
+                // update user role
+                await User.findByIdAndUpdate(request.providerId, {
+                    role: "SERVICE_PROVIDER"
+                }, { session });
 
-            // update user role
-            await User.findByIdAndUpdate(request.providerId, {
-                role: "SERVICE_PROVIDER"
+                // create service entry
+                await Service.create([{
+                    providerId: request.providerId,
+                    categoryId: request.categoryId,
+                    name: request.subCategory.name,
+                    description: request.subCategory.description,
+                    price: request.subCategory.price,
+                    images: request.subCategory.images,
+                }], { session });
+
+                request.status = "ACCEPTED";
+            }
+
+            // REJECT LOGIC
+            if (decision === "REJECT") {
+                request.status = "REJECTED";
+            }
+
+            await request.save({ session });
+            await session.commitTransaction();
+            session.endSession();
+
+            return res.status(200).json({
+                success: true,
+                message: `Request ${request.status.toLowerCase()} successfully`,
+                request
             });
-
-            // create service entry
-            await Service.create({
-                providerId: request.providerId,
-                categoryId: request.categoryId,
-                name: request.subCategory.name,
-                description: request.subCategory.description,
-                price: request.subCategory.price,
-                images: request.subCategory.images,
-            });
-
-            request.status = "ACCEPTED";
+        } catch (error) {
+            await session.abortTransaction();
+            session.endSession();
+            throw error;
         }
-
-        // REJECT LOGIC
-        if (decision === "REJECT") {
-            request.status = "REJECTED";
-        }
-
-        await request.save();
-
-        return res.status(200).json({
-            success: true,
-            message: `Request ${request.status.toLowerCase()} successfully`,
-            request
-        });
 
     } catch (error) {
 

@@ -22,11 +22,6 @@ export const request = async (req, res) => {
       });
     }
 
-    if (user.role === "CONSUMER") {
-      user.role = "SERVICE_PROVIDER";
-      await user.save();
-    }
-
     const category = await Category.findById(categoryId);
     if (!category) {
       return res.status(404).json({

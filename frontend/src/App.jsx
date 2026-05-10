@@ -15,6 +15,9 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import LogoLoader from "./components/LogoLoader";
 import privateAxios from "./api/privateAxios";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminCategories from "./pages/admin/AdminCategories";
 import Admin_Dashboard from "./pages/admin/Admin_Dashboard";
 import ServiceProvider_Dashboard from "./pages/service_Provider/ServiceProvider_Dashboard";
 import ServiceRequest from "./components/ServiceRequest";
@@ -37,6 +40,7 @@ import AddWorker from "./pages/service_Provider/AddWorker";
 import WorkerLogin from "./pages/worker/WorkerLogin";
 import WorkerDashboard from "./pages/worker/WorkerDashboard";
 import ProviderReviews from "./pages/service_Provider/ProviderReviews";
+import AddressManagement from "./pages/AddressManagement";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -131,7 +135,11 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/adminDashboard" element={<Admin_Dashboard />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<Admin_Dashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="categories" element={<AdminCategories />} />
+        </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/contact" element={<Contact />} />
@@ -143,6 +151,7 @@ const App = () => {
         <Route path="/profile">
           <Route index element={<Profile />} />
           <Route path="update" element={<UpdateProfile />} />
+          <Route path="addresses" element={<AddressManagement />} />
         </Route>
 
         <Route path="/verify-email" element={<Verify />} />
