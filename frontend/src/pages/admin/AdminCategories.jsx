@@ -35,7 +35,7 @@ const AdminCategories = () => {
         low: parseInt(data.low),
         high: parseInt(data.high),
       };
-      await axios.post("http://localhost:8000/api/category/create-category", payload, {
+      await axios.post("http://localhost:8000/api/category/create", payload, {
         withCredentials: true,
       });
       toast.success("Category created successfully");

@@ -6,7 +6,7 @@ const adminRouter = express.Router();
 
 adminRouter.post("/register", addAdmin);
 adminRouter.post("/login", adminLogin);
-adminRouter.get("/logout", verifyToken, isAdmin, adminLogout);
+adminRouter.post("/logout", verifyToken, isAdmin, adminLogout);
 adminRouter.get("/user-status/:userId", verifyToken, isAdmin, changeUserStatus);
 adminRouter.get("/get-all-users", verifyToken, isAdmin, getAllUsers);
 adminRouter.put("/category-status/:categoryId", verifyToken, isAdmin, changeCategoryStatus);

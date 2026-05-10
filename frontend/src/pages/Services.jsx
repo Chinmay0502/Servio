@@ -4,22 +4,56 @@ import { useNavigate } from "react-router-dom";
 
 const Services = () => {
   const navigate = useNavigate();
-  const [services, setServices] = useState([]);
-  const [activeFilter, setActiveFilter] = useState("all");
 
+  const [services, setServices] = useState([]);
+  const [ratingsMap, setRatingsMap] = useState({});
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [loading, setLoading] = useState(false);
+
+  // Fetch Services
   const fetchServices = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8000/api/services/get-all-services",
+        "http://localhost:8000/api/services/get-all-services"
       );
-      setServices(res.data.services);
+      setServices(res.data.services || []);
     } catch (error) {
-      console.log(error.response?.data);
+      console.log(error.response?.data || error.message);
+    }
+  };
+
+  // Fetch Average Ratings (from Task table)
+  const fetchRatings = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/task/service/average-ratings"
+      );
+
+      const map = {};
+      res.data.ratings.forEach((item) => {
+        map[item._id] = item.avgRating;
+      });
+
+      setRatingsMap(map);
+    } catch (error) {
+      console.log(error.response?.data || error.message);
     }
   };
 
   useEffect(() => {
-    fetchServices();
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        await fetchServices();
+        await fetchRatings();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   const filterButtons = [
@@ -28,29 +62,58 @@ const Services = () => {
     { label: "Plumbing", value: "plumbing" },
     { label: "Painting", value: "painting" },
     { label: "AC Repair", value: "ac" },
+
+    // ⭐ Rating Filters
+    { label: "⭐ 5 Star", value: "rating5" },
+    { label: "⭐ 4+ Star", value: "rating4" },
+    { label: "⭐ 3+ Star", value: "rating3" },
+
     { label: "Top Rated", value: "topRated" },
     { label: "Price: Low → High", value: "lowHigh" },
     { label: "Price: High → Low", value: "highLow" },
   ];
 
   const getFilteredServices = () => {
-    let filtered = [...services];
+    // Merge rating into each service
+    let filtered = services.map((service) => ({
+      ...service,
+      rating: ratingsMap[service._id] || 0,
+    }));
 
+    // Category Filter
     if (
       activeFilter !== "all" &&
       activeFilter !== "topRated" &&
       activeFilter !== "lowHigh" &&
-      activeFilter !== "highLow"
+      activeFilter !== "highLow" &&
+      activeFilter !== "rating5" &&
+      activeFilter !== "rating4" &&
+      activeFilter !== "rating3"
     ) {
       filtered = filtered.filter(
-        (s) => s.categoryId?.name?.toLowerCase() === activeFilter,
+        (s) => s.categoryId?.name?.toLowerCase() === activeFilter
       );
     }
 
-    if (activeFilter === "topRated") {
-      filtered = filtered.filter((s) => (s.rating || 0) >= 5);
+    // ⭐ Rating Filters
+    if (activeFilter === "rating5") {
+      filtered = filtered.filter((s) => s.rating >= 5);
     }
 
+    if (activeFilter === "rating4") {
+      filtered = filtered.filter((s) => s.rating >= 4);
+    }
+
+    if (activeFilter === "rating3") {
+      filtered = filtered.filter((s) => s.rating >= 3);
+    }
+
+    // Top Rated
+    if (activeFilter === "topRated") {
+      filtered = filtered.filter((s) => s.rating >= 5);
+    }
+
+    // Sorting
     if (activeFilter === "lowHigh") {
       filtered = filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
     }
@@ -101,6 +164,13 @@ const Services = () => {
           ))}
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <p className="text-gray-400 text-sm mt-10 text-center">
+            Loading services...
+          </p>
+        )}
+
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 fade-up">
           {filteredServices.map((service) => (
@@ -109,6 +179,7 @@ const Services = () => {
               onClick={() => navigate(`/service/${service._id}`)}
               className="bg-[#12121f] border border-[#6c3be8]/25 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:border-primary hover:shadow-primary"
             >
+              {/* Service Images */}
               {service.images && service.images.length > 0 ? (
                 <div className="w-full h-44 overflow-x-auto flex snap-x snap-mandatory scroll-smooth no-scrollbar">
                   {service.images.map((img, index) => (
@@ -130,7 +201,7 @@ const Services = () => {
               <div className="p-6">
                 {/* Provider Section */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 flex-shrink-0 ">
+                  <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
                     <img
                       src={
                         service.providerId?.image?.url || "/Profile_Image.jpg"
@@ -144,8 +215,18 @@ const Services = () => {
                     <div className="font-bold text-sm">
                       {service.providerId?.name || "Unknown Provider"}
                     </div>
+
                     <div className="text-gray-400 text-xs">
                       {service.categoryId?.name || "Category"}
+                    </div>
+
+                    {/* ⭐ Rating */}
+                    <div className="text-yellow-400 text-xs mt-0.5">
+                      {"★".repeat(Math.round(service.rating || 0))}
+                      {"☆".repeat(5 - Math.round(service.rating || 0))}
+                      <span className="text-gray-400 ml-2">
+                        ({service.rating.toFixed(1)})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -179,7 +260,7 @@ const Services = () => {
         </div>
 
         {/* If No Services */}
-        {filteredServices.length === 0 && (
+        {!loading && filteredServices.length === 0 && (
           <p className="text-gray-400 text-sm mt-10 text-center">
             No services found for this filter.
           </p>

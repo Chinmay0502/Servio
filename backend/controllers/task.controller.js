@@ -645,3 +645,35 @@ export const getServiceReviews = async (req, res) => {
     res.status(500).json({ message: "Internal Server error", success: false });
   }
 };
+
+export const getAllServiceAverageRatings = async (req, res) => {
+  try {
+    const ratings = await Task.aggregate([
+      {
+        $match: {
+          status: "COMPLETED",
+          rating: { $exists: true, $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: "$serviceId", // group by serviceId
+          avgRating: { $avg: "$rating" },
+          totalReviews: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      ratings,
+      message: "Average ratings fetched successfully",
+    });
+  } catch (error) {
+    console.log("Fetch average ratings error:", error.message);
+    res.status(500).json({
+      message: "Internal Server error",
+      success: false,
+    });
+  }
+};

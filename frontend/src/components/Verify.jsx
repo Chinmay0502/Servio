@@ -49,15 +49,11 @@ const Verify = () => {
 
   return (
     <section
-      className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a12] relative overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(circle at 20% 20%, rgba(108,59,232,.25), transparent 50%), radial-gradient(circle at 80% 30%, rgba(232,24,92,.18), transparent 55%), radial-gradient(circle at 50% 80%, rgba(14,165,233,.12), transparent 60%), #0a0a12",
-      }}
+      className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden"
     >
       {/* Glow Blur Orbs */}
-      <div className="absolute top-[-120px] left-[-120px] w-[300px] h-[300px] bg-pink/20 blur-[120px] rounded-full"></div>
-      <div className="absolute bottom-[-120px] right-[-120px] w-[300px] h-[300px] bg-purple-500/20 blur-[120px] rounded-full"></div>
+      {/* <div className="absolute top-[-120px] left-[-120px] w-[300px] h-[300px] bg-pink/20 blur-[120px] rounded-full"></div>
+      <div className="absolute bottom-[-120px] right-[-120px] w-[300px] h-[300px] bg-purple-500/20 blur-[120px] rounded-full"></div> */}
 
       {/* Card */}
       <div className="relative z-10 max-w-lg w-full bg-[#12121f]/70 backdrop-blur-xl border border-[#6c3be8]/30 rounded-3xl p-10 text-center shadow-xl shadow-[#6c3be8]/10">
