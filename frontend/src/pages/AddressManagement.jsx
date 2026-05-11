@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { Loader2, Plus, Edit2, Trash2, MapPin } from "lucide-react";
 import { useForm } from "react-hook-form";
 import {Link} from "react-router-dom";
+import api from "../api/api"
 
 const AddressManagement = () => {
   const [addresses, setAddresses] = useState([]);
@@ -16,7 +17,7 @@ const AddressManagement = () => {
 
   const fetchAddresses = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/address", {
+      const res = await api.get("/address", {
         withCredentials: true,
       });
       setAddresses(res.data.addresses);
@@ -64,12 +65,12 @@ const AddressManagement = () => {
       };
 
       if (isEditing) {
-        await axios.put(`http://localhost:8000/api/address/update/${editId}`, payload, {
+        await api.put(`/address/update/${editId}`, payload, {
           withCredentials: true,
         });
         toast.success("Address updated successfully");
       } else {
-        await axios.post("http://localhost:8000/api/address/add", payload, {
+        await api.post("/address/add", payload, {
           withCredentials: true,
         });
         toast.success("Address added successfully");
@@ -90,7 +91,7 @@ const AddressManagement = () => {
   const handleDelete = async (id) => {
     if(!window.confirm("Are you sure you want to delete this address?")) return;
     try {
-      await axios.delete(`http://localhost:8000/api/address/delete/${id}`, {
+      await api.delete(`/address/delete/${id}`, {
         withCredentials: true,
       });
       toast.success("Address deleted");

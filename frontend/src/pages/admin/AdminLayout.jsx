@@ -3,14 +3,15 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Users, Tags, LogOut } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import api from "../../api/api";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        "http://localhost:8000/api/admin/logout",
+      await api.post(
+        "/admin/logout",
         {},
         { withCredentials: true }
       );

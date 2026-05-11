@@ -4,7 +4,7 @@ import axios from "axios";
 import { State, City } from "country-state-city";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-
+import api from "../api/api"
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -83,8 +83,8 @@ const ServiceDetails = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        `http://localhost:8000/api/services/get-service/${id}`
+      const res = await api.get(
+        `/services/get-service/${id}`
       );
 
       setService(res.data.service);
@@ -101,7 +101,7 @@ const ServiceDetails = () => {
     if (!user) return;
 
     try {
-      const res = await axios.get("http://localhost:8000/api/address", {
+      const res = await api.get("/address", {
         withCredentials: true,
       });
 
@@ -159,7 +159,7 @@ const ServiceDetails = () => {
         location,
       };
 
-      const res = await axios.post("http://localhost:8000/api/address", payload, {
+      const res = await api.post("/address", payload, {
         withCredentials: true,
       });
 
@@ -203,7 +203,7 @@ const ServiceDetails = () => {
         preferredTime,
       };
 
-      const res = await axios.post("http://localhost:8000/api/task", payload, {
+      const res = await api.post("/task", payload, {
         withCredentials: true,
       });
 
@@ -221,8 +221,8 @@ const ServiceDetails = () => {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8000/api/task/service/${id}/reviews`
+      const res = await api.get(
+        `/service/${id}/reviews`
       );
 
       setReviews(res.data.reviews || []);

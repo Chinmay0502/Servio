@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import api from "../api/api"
 
 const MyBookings = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const MyBookings = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get("http://localhost:8000/api/task/user", {
+      const res = await api.get("/task/user", {
         withCredentials: true,
       });
 
@@ -50,8 +51,8 @@ const MyBookings = () => {
   // ================= CANCEL BOOKING =================
   const cancelBooking = async (taskId) => {
     try {
-      const res = await axios.delete(
-        `http://localhost:8000/api/task/cancel/${taskId}`,
+      const res = await api.delete(
+        `/task/cancel/${taskId}`,
         { withCredentials: true }
       );
 

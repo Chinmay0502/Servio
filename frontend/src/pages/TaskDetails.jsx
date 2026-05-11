@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-
+import api from "../api/api"
 const TaskDetails = () => {
   const { taskId } = useParams();
   const token = useSelector((state) => state.user.token);
@@ -18,8 +18,8 @@ const TaskDetails = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        `http://localhost:8000/api/task/provider/${taskId}`,
+      const res = await api.get(
+        `/task/provider/${taskId}`,
         {
           withCredentials: true,
           headers: {
@@ -39,8 +39,8 @@ const TaskDetails = () => {
 
   const fetchWorkers = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/worker/provider-workers",
+      const res = await api.get(
+        "/worker/provider-workers",
         {
           withCredentials: true,
           headers: {
@@ -64,8 +64,8 @@ const TaskDetails = () => {
     try {
       setAssignLoading(true);
 
-      const res = await axios.patch(
-        `http://localhost:8000/api/task/${taskId}/assign`,
+      const res = await api.patch(
+        `/task/${taskId}/assign`,
         { workerIds: selectedWorkers },
         {
           withCredentials: true,

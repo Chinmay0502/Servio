@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { logout } from "../../redux/slices/userSlice";
 import LogoLoader from "../LogoLoader";
+import api from "../../api/api"
 
 const Profile_Header = () => {
   const user = useSelector((state) => state.user.value);
@@ -18,8 +19,8 @@ const Profile_Header = () => {
     if (isLoading) return;
     setIsLoading(true);
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/auth/user/logout",
+      const res = await api.get(
+        "/auth/user/logout",
         { withCredentials: true },
       );
       dispatch(logout());

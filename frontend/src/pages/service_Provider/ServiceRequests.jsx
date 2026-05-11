@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import api from "../../api/api";
 
 const ServiceRequests = () => {
   const token = useSelector((state) => state.user.token);
@@ -13,7 +14,7 @@ const ServiceRequests = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get("http://localhost:8000/api/task/provider", {
+      const res = await api.get("/task/provider", {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${token}`,

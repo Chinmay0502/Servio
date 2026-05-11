@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import api from "../api/api"
 const Services = () => {
   const navigate = useNavigate();
 
@@ -13,8 +13,8 @@ const Services = () => {
   // Fetch Services
   const fetchServices = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/services/get-all-services"
+      const res = await api.get(
+        "/services/get-all-services"
       );
       setServices(res.data.services || []);
     } catch (error) {
@@ -25,8 +25,8 @@ const Services = () => {
   // Fetch Average Ratings (from Task table)
   const fetchRatings = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/task/service/average-ratings"
+      const res = await api.get(
+        "/task/service/average-ratings"
       );
 
       const map = {};

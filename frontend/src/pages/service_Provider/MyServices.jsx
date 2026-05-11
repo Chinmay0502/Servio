@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../../api/api";
 
 const MyServices = () => {
   const [services, setServices] = useState([]);
@@ -20,8 +21,8 @@ const MyServices = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        "http://localhost:8000/api/services/my-services",
+      const res = await api.get(
+        "/services/my-services",
         { withCredentials: true },
       );
 
@@ -42,8 +43,8 @@ const MyServices = () => {
     try {
       setUpdatingId(serviceId);
 
-      const res = await axios.put(
-        `http://localhost:8000/api/services/toggle-status/${serviceId}`,
+      const res = await api.put(
+        `/services/toggle-status/${serviceId}`,
         {},
         { withCredentials: true },
       );
@@ -85,8 +86,8 @@ const MyServices = () => {
   try {
     setSaving(true);
 
-    const res = await axios.put(
-      `http://localhost:8000/api/services/${editService._id}`,
+    const res = await api.put(
+      `/services/${editService._id}`,
       editForm,
       { withCredentials: true }
     );

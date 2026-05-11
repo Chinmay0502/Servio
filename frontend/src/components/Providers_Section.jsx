@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-
+import api from "../api/api"
 const Providers_Section = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [servicesData, setServicesData] = useState([]);
@@ -28,8 +28,8 @@ const Providers_Section = () => {
   // Fetch Services
   const fetchServices = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/services/get-all-services"
+      const res = await api.get(
+        "/services/get-all-services"
       );
       setServicesData(res.data.services || []);
     } catch (error) {
@@ -40,8 +40,8 @@ const Providers_Section = () => {
   // Fetch Average Ratings of all services from Task model
   const fetchRatings = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/task/service/average-ratings"
+      const res = await api.get(
+        "/task/service/average-ratings"
       );
 
       const map = {};

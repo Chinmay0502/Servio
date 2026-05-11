@@ -3,7 +3,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import api from "../api/api"
 const ServiceRequest = () => {
   const { register, handleSubmit, watch, reset } = useForm();
 
@@ -17,8 +17,8 @@ const ServiceRequest = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/category/get-all-categories",
+      const res = await api.get(
+        "/category/get-all-categories",
         { withCredentials: true }
       );
       setCategories(res.data.categories);
@@ -64,8 +64,8 @@ const ServiceRequest = () => {
     });
 
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/service-provider/request",
+      const res = await api.post(
+        "/service-provider/request",
         formData,
         {
           withCredentials: true,

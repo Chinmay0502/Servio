@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { UserX, UserCheck, ShieldAlert } from "lucide-react";
+import api from "../../api/api";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get("http://localhost:8000/api/admin/get-all-users", {
+      const res = await api.get("/admin/get-all-users", {
         withCredentials: true,
       });
       setUsers(res.data.users);
@@ -28,7 +29,7 @@ const AdminUsers = () => {
 
   const toggleUserStatus = async (id) => {
     try {
-      await axios.get(`http://localhost:8000/api/admin/user-status/${id}`, {
+      await api.get(`/admin/user-status/${id}`, {
         withCredentials: true,
       });
       toast.success("User status updated successfully");
