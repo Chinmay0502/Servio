@@ -19,7 +19,7 @@ const app = express();
 app.use(express.json());
 app.use(urlencoded({extended: true}));
 app.use(cors({
-    origin: ["http://localhost:5173", process.env.BASE_URL],
+    origin: ["http://localhost:5173", process.env.CLIENT_URL],
     methods: ['GET', 'PUT', 'POST', "DELETE", "PATCH"],
     credentials: true,
     allowedHeader: ['Content-Type', 'Authorization']
