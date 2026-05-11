@@ -3,8 +3,8 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // Use true for port 465, false for port 587
+  port: 465,
+  secure: true, // Use true for port 465, false for port 587
   auth: {
     user: process.env.APP_GMAIL,
     pass: process.env.GMAIL_APP_PASSWORD,
@@ -12,10 +12,9 @@ const transporter = nodemailer.createTransport({
 });
 
 export const generateVerifyEmailOption = (email, token) => {
-  const verificationUrl = `${process.env.BASE_URL}/api/auth/user/verify/${token}`;
-
+const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
   return {
-    from: '"Servio" <support@servio.dev>',
+    from: `"Servio" <${process.env.APP_GMAIL}>`,
     to: email,
     subject: "Verify your email address",
     text: `
@@ -104,7 +103,7 @@ export const generateUserStatusChangeOption = (email, status) => {
   const isBlocked = status === "BLOCKED";
 
   return {
-    from: '"Servio" <support@servio.dev>',
+    from: `"Servio" <${process.env.APP_GMAIL}>`,
     to: email,
     subject: `Your Servio Account Has Been ${isBlocked ? "Blocked" : "Reactivated"}`,
     text: `
@@ -186,7 +185,7 @@ Servio Support Team
 };
 export const generateOtpEmailOption = (email, otp, serviceName) => {
   return {
-    from: '"Servio" <support@servio.dev>',
+    from: `"Servio" <${process.env.APP_GMAIL}>`,
     to: email,
     subject: "Your Service OTP Verification Code",
     text: `
