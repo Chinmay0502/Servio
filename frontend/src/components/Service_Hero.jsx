@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-
+import api from "../api/api"
 const Service_Hero = () => {
 
   const [services, setServices] = useState([]);
@@ -10,8 +10,8 @@ const Service_Hero = () => {
   const fetchServices = async () => {
     try {
 
-      const res = await axios.get(
-        "http://localhost:8000/api/services/get-all-services"
+      const res = await api.get(
+        "/services/get-all-services"
       );
 
       setServices(res.data.services);

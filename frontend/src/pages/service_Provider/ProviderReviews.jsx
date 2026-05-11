@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../../api/api";
 
 const ProviderReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -9,8 +10,8 @@ const ProviderReviews = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        "http://localhost:8000/api/task/provider/reviews",
+      const res = await api.get(
+        "/task/provider/reviews",
         {
           withCredentials: true,
         }

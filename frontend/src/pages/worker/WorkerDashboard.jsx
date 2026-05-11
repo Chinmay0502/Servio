@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import { Play, Loader2 } from "lucide-react";
+import api from "../../api/api";
 
 const WorkerDashboard = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const WorkerDashboard = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get("http://localhost:8000/api/task/worker", {
+      const res = await api.get("/task/worker", {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${workerToken}`,
@@ -62,8 +63,8 @@ const WorkerDashboard = () => {
     try {
       setActionLoadingId(taskId); // ✅ loader start
 
-      await axios.post(
-        `http://localhost:8000/api/task/${taskId}/generate-otp`,
+      await api.post(
+        `/task/${taskId}/generate-otp`,
         {},
         {
           withCredentials: true,
@@ -96,8 +97,8 @@ const WorkerDashboard = () => {
 
       const endpoint =
         actionType === "start"
-          ? `http://localhost:8000/api/task/${selectedTaskId}/start`
-          : `http://localhost:8000/api/task/${selectedTaskId}/complete`;
+          ? `/task/${selectedTaskId}/start`
+          : `/task/${selectedTaskId}/complete`;
 
       const res = await axios.patch(
         endpoint,

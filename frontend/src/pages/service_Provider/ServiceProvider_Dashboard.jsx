@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
+import api from "../../api/api";
 
 const ServiceProvider_Dashboard = () => {
   const user = useSelector((state) => state.user.value);
@@ -16,8 +17,8 @@ const ServiceProvider_Dashboard = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        "http://localhost:8000/api/task/provider",
+      const res = await api.get(
+        "/task/provider",
         {
           withCredentials: true,
           headers: {
@@ -38,8 +39,8 @@ const ServiceProvider_Dashboard = () => {
     try {
       setRespondLoading(taskId);
 
-      await axios.patch(
-        `http://localhost:8000/api/task/${taskId}/respond`,
+      await api.patch(
+        `/task/${taskId}/respond`,
         { action },
         {
           withCredentials: true,

@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-
+import api from "../api/api"
 /* schema unchanged */
 const SigninSchema = z.object({
   name: z.string().min(3),
@@ -37,8 +37,8 @@ const Signin = () => {
 
     setIsLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/auth/user/register",
+      const res = await api.post(
+        "/auth/user/register",
         data
       );
 

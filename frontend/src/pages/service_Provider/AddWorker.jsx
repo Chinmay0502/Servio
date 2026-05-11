@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/api";
 
 const AddWorker = () => {
   const token = useSelector((state) => state.user.token);
@@ -35,8 +36,8 @@ const AddWorker = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:8000/api/worker/add",
+      const res = await api.post(
+        "/worker/add",
         formData,
         {
           withCredentials: true,

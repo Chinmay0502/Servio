@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Plus, Edit, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import api from "../../api/api";
 
 const AdminCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -13,7 +14,7 @@ const AdminCategories = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/category/get-all-categories", {
+      const res = await api.get("/category/get-all-categories", {
         withCredentials: true,
       });
       setCategories(res.data.categories);
@@ -35,7 +36,7 @@ const AdminCategories = () => {
         low: parseInt(data.low),
         high: parseInt(data.high),
       };
-      await axios.post("http://localhost:8000/api/category/create", payload, {
+      await api.post("/category/create", payload, {
         withCredentials: true,
       });
       toast.success("Category created successfully");
@@ -52,7 +53,7 @@ const AdminCategories = () => {
 
   const toggleStatus = async (id) => {
     try {
-      await axios.put(`http://localhost:8000/api/admin/change-category-status/${id}`, {}, {
+      await api.put(`/admin/change-category-status/${id}`, {}, {
         withCredentials: true,
       });
       toast.success("Category status updated");

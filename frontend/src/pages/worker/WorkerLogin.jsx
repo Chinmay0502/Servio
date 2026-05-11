@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../../api/api";
 
 const WorkerLogin = () => {
   const navigate = useNavigate();
@@ -30,8 +31,8 @@ const WorkerLogin = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:8000/api/worker/login",
+      const res = await api.post(
+        "/worker/login",
         formData,
         {
           withCredentials: true,

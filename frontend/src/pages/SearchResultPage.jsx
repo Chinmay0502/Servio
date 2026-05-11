@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import ServiceCard from "../components/ServiceCard";
+import api from "../api/api"
 
 const SearchResultPage = () => {
   const [params] = useSearchParams();
@@ -15,8 +16,8 @@ const SearchResultPage = () => {
 
   const fetchResults = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8000/api/services/search?q=${query}`
+      const res = await api.get(
+        `/services/search?q=${query}`
       );
 
       setServices(res.data.services);

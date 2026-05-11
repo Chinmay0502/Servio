@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../../api/api"
 
 const Request_Section = () => {
   const [requests, setRequests] = useState([]);
@@ -7,8 +8,8 @@ const Request_Section = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/admin/get-all-provider-requests",
+      const res = await api.get(
+        "/admin/get-all-provider-requests",
         { withCredentials: true }
       );
       setRequests(res.data.requests);
@@ -25,8 +26,8 @@ const Request_Section = () => {
     try {
       setLoadingId(id); // ✅ start loader
 
-      await axios.put(
-        `http://localhost:8000/api/admin/service-provider-status/${id}`,
+      await api.put(
+        `/admin/service-provider-status/${id}`,
         { decision },
         { withCredentials: true }
       );

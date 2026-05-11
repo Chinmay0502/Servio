@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Calendar, Clock, CreditCard, Star } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import api from "../../api/api";
 
 const Order_Card = ({ order, onReviewSubmitted }) => {
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -17,8 +18,8 @@ const Order_Card = ({ order, onReviewSubmitted }) => {
 
     setIsSubmitting(true);
     try {
-      const res = await axios.patch(
-        `http://localhost:8000/api/task/${order._id}/review`,
+      const res = await api.patch(
+        `/task/${order._id}/review`,
         { rating, feedback },
         { withCredentials: true }
       );

@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { login } from "../redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
-
+import api from "../api/api"
 // ✅ Validation Schema
 const UpdateSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -78,8 +78,8 @@ const UpdateProfile = () => {
                 data.append("profileImage", file);
             }
 
-            const res = await axios.post(
-                "http://localhost:8000/api/auth/user/update",
+            const res = await api.post(
+                "/auth/user/update",
                 data,
                 {
                     withCredentials: true,

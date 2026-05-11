@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import api from "../api/api"
 const Verify = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("Waiting for verification...");
@@ -11,8 +11,8 @@ const Verify = () => {
 
   const checkVerification = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/auth/user/check-verification",
+      const res = await api.post(
+        "/auth/user/check-verification",
         { email }
       );
 

@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import {login} from '../redux/slices/userSlice';
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
+import api from "../api/api"
 
 const LoginSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -31,8 +32,8 @@ const Login = () => {
     console.log(formData);
     setIsLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/auth/user/login",
+      const res = await api.post(
+        "/auth/user/login",
         formData,
         {withCredentials: true}
       );
