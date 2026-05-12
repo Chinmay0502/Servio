@@ -2,7 +2,7 @@ import React from "react";
 
 const LogoLoader = ({show}) => {
   return  show && (
-    <div className="flex items-center justify-center h-screen bg-black">
+    <div className="flex items-center justify-center h-screen">
       
       <div className="relative flex flex-col items-center justify-center">
 
