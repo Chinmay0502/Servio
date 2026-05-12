@@ -20,7 +20,8 @@ export const userRegister = async (req, res) => {
             });
         }
         const verificationToken = crypto.randomBytes(32).toString('hex');
-        const verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000;
+        // const verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000;
+        const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
         const newUser = await User.create({ name, email, password, phone, aadhaarNo, gender: gender.toUpperCase(),verificationToken, verificationTokenExpiry });
         if (!newUser) return res.status(400).json({
             message: "User couldn't created",
@@ -58,32 +59,44 @@ export const userRegister = async (req, res) => {
 }
 
 export const userVerify = async (req, res) => {
-    const { token } = req.params;
-    try {
-        const user = await User.findOne({
-            verificationToken: token, verificationTokenExpiry: { $gt: Date.now() }
-        });
-        if (!user) return res.status(400).json({
-            message: "Invalid token",
-            success: false
-        })
-        user.isVerified = true;
-        user.verificationToken = undefined;
-        user.verificationTokenExpiry = undefined;
-        await user.save();
+  const { token } = req.params;
 
-        return res.status(200).json({
-            message: "User verified successfully",
-            success: true
-        })
-    } catch (error) {
-        console.error("Error verifying user: ", error);
-        res.status(500).json({
-            message: "Internal server error",
-            success: false
-        })
+  try {
+    const user = await User.findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid token",
+        success: false,
+      });
     }
-}
+
+    if (user.verificationTokenExpiry < new Date()) {
+      return res.status(400).json({
+        message: "Token expired",
+        success: false,
+      });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiry = undefined;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "User verified successfully",
+      success: true,
+    });
+
+  } catch (error) {
+    console.error("Error verifying user:", error);
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
 
 export const userLogin = async (req, res) => {
     const { email, password } = req.body;
