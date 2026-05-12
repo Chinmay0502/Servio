@@ -30,10 +30,9 @@ export const userRegister = async (req, res) => {
         //send mail
         const options = generateVerifyEmailOption(email, verificationToken);
         const isMailSent = await sendEmail(options);
-        if (!isMailSent) return res.status(400).json({
-            message: "Mail couldn't be sent",
-            success: false
-        })
+        if (!isMailSent){
+            console.log("User created but verification email failed to send.");
+        }
 
         return res.status(201).json({
             message: "User created successfully. Now verify the email",

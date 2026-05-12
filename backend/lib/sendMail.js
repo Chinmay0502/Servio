@@ -1,33 +1,31 @@
-// import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   host: "smtp.gmail.com",
-//   port: 465,
-//   secure: true,
-//   auth: {
-//     user: process.env.APP_GMAIL,
-//     pass: process.env.GMAIL_APP_PASSWORD,
-//   },
-// });
-import nodemailer from "nodemailer";
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.APP_GMAIL,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+// ---------------- SEND EMAIL FUNCTION ----------------
+export const sendEmail = async (options) => {
+  try {
+    const data = await resend.emails.send({
+      from: "Servio <onboarding@resend.dev>", // Free Resend default sender
+      to: [options.to],
+      subject: options.subject,
+      html: options.html,
+      text: options.text,
+    });
 
-export default transporter;
+    console.log("Resend Email Sent:", data);
+    return true;
+  } catch (error) {
+    console.log("Resend Email Error:", error);
+    return false;
+  }
+};
 
+// ---------------- VERIFY EMAIL TEMPLATE ----------------
 export const generateVerifyEmailOption = (email, token) => {
-const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+  const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+
   return {
-    from: `"Servio" <${process.env.APP_GMAIL}>`,
     to: email,
     subject: "Verify your email address",
     text: `
@@ -96,29 +94,19 @@ If you did not create an account, you can safely ignore this email.
     </table>
   </body>
 </html>
-    `
+    `,
   };
 };
 
-
-export const sendEmail = async (options) => {
-  try {
-    const info = await transporter.sendMail(options);
-    console.log("Message sent:", info.messageId);
-    return true;
-  } catch (error) {
-    console.error("Error sending verification email: ", error);
-    return false;
-  }
-}
-
+// ---------------- USER STATUS CHANGE TEMPLATE ----------------
 export const generateUserStatusChangeOption = (email, status) => {
   const isBlocked = status === "BLOCKED";
 
   return {
-    from: `"Servio" <${process.env.APP_GMAIL}>`,
     to: email,
-    subject: `Your Servio Account Has Been ${isBlocked ? "Blocked" : "Reactivated"}`,
+    subject: `Your Servio Account Has Been ${
+      isBlocked ? "Blocked" : "Reactivated"
+    }`,
     text: `
 Hello,
 
@@ -193,16 +181,17 @@ Servio Support Team
     </table>
   </body>
 </html>
-    `
+    `,
   };
 };
+
+// ---------------- OTP TEMPLATE ----------------
 export const generateOtpEmailOption = (email, otp, serviceName) => {
   return {
-    from: `"Servio" <${process.env.APP_GMAIL}>`,
     to: email,
     subject: "Your Service OTP Verification Code",
     text: `
-Your OTP for the service is: ${otp}
+Your OTP for the service ${serviceName} is: ${otp}
 
 This OTP is valid for 5 minutes.
 
@@ -280,6 +269,6 @@ Do not share this OTP with anyone.
     </table>
   </body>
 </html>
-    `
+    `,
   };
 };
