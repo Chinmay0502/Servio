@@ -38,7 +38,7 @@ export const sendEmail = async (options) => {
 
 // ---------------- VERIFY EMAIL TEMPLATE ----------------
 export const generateVerifyEmailOption = (email, token) => {
-  const verificationUrl = `${process.env.CLIENT_URL}/verify/${token}`;
+  const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
 
   return {
     to: email,
