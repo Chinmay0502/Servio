@@ -100,7 +100,7 @@ const WorkerDashboard = () => {
           ? `/task/${selectedTaskId}/start`
           : `/task/${selectedTaskId}/complete`;
 
-      const res = await axios.patch(
+      const res = await api.patch(
         endpoint,
         { otp },
         {
