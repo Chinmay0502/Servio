@@ -1,15 +1,28 @@
+// import nodemailer from "nodemailer";
+
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   host: "smtp.gmail.com",
+//   port: 465,
+//   secure: true,
+//   auth: {
+//     user: process.env.APP_GMAIL,
+//     pass: process.env.GMAIL_APP_PASSWORD,
+//   },
+// });
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.APP_GMAIL,
     pass: process.env.GMAIL_APP_PASSWORD,
   },
 });
+
+export default transporter;
 
 export const generateVerifyEmailOption = (email, token) => {
 const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
