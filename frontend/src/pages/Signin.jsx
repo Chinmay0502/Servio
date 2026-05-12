@@ -6,20 +6,29 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import api from "../api/api"
+import api from "../api/api";
 /* schema unchanged */
-const SigninSchema = z.object({
-  name: z.string().min(3),
-  email: z.string().email(),
-  phone: z.string().min(10).max(10).regex(/^[6-9]\d{9}$/),
-  aadhaarNo: z.string().length(12).regex(/^[2-9]{1}[0-9]{11}$/),
-  gender: z.enum(["MALE", "FEMALE", "OTHER"]),
-  password: z.string().min(6),
-  confirmPassword: z.string().min(6),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const SigninSchema = z
+  .object({
+    name: z.string().min(3),
+    email: z.string().email(),
+    phone: z
+      .string()
+      .min(10)
+      .max(10)
+      .regex(/^[6-9]\d{9}$/),
+    aadhaarNo: z
+      .string()
+      .length(12)
+      .regex(/^[2-9]{1}[0-9]{11}$/),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"]),
+    password: z.string().min(6),
+    confirmPassword: z.string().min(6),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,8 +36,12 @@ const Signin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { register, handleSubmit, reset, formState: { errors } } =
-    useForm({ resolver: zodResolver(SigninSchema), mode: "onTouched" });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(SigninSchema), mode: "onTouched" });
 
   async function submit(formData) {
     if (isLoading) return;
@@ -37,17 +50,20 @@ const Signin = () => {
 
     setIsLoading(true);
     try {
-      const res = await api.post(
-        "/auth/user/register",
-        data
-      );
+      const res = await api.post("/auth/user/register", data);
 
       toast.success(res.data.message || "User created successfully");
       sessionStorage.setItem("verifyEmail", res.data.user.email);
       reset();
       navigate("/verify-email");
     } catch (error) {
-      toast.error("Error creating user");
+      console.log("Register Error:", error);
+
+      toast.error(
+        error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          "Registration failed",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -55,11 +71,12 @@ const Signin = () => {
 
   return (
     <div className="w-full flex justify-center px-4 sm:px-6 md:px-0">
-      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl
+      <div
+        className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl
         mt-10 mb-10 p-4 sm:p-6
         bg-[rgba(20,22,35,0.55)] border border-white/20
-        rounded-2xl shadow-xl shadow-primary">
-
+        rounded-2xl shadow-xl shadow-primary"
+      >
         {/* HEADER */}
         <div className="flex flex-col items-center mb-6">
           <img src="/Final_Logo.png" className="w-10" />
@@ -69,7 +86,6 @@ const Signin = () => {
         </div>
 
         <form onSubmit={handleSubmit(submit)} className="space-y-4">
-
           {/* NAME */}
           <div>
             <label className="text-sm font-semibold">Full Name</label>
@@ -95,8 +111,10 @@ const Signin = () => {
                     {...register("gender")}
                     className="hidden peer"
                   />
-                  <div className="text-center px-4 py-2 rounded-xl border border-white/20 bg-[rgba(20,22,35,0.55)]
-                    peer-checked:bg-primary peer-checked:text-white transition">
+                  <div
+                    className="text-center px-4 py-2 rounded-xl border border-white/20 bg-[rgba(20,22,35,0.55)]
+                    peer-checked:bg-primary peer-checked:text-white transition"
+                  >
                     {g}
                   </div>
                 </label>
