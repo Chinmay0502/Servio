@@ -1,22 +1,37 @@
-import { Resend } from "resend";
+import axios from "axios";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// ---------------- SEND EMAIL FUNCTION ----------------
+// ---------------- SEND EMAIL USING BREVO ----------------
 export const sendEmail = async (options) => {
   try {
-    const data = await resend.emails.send({
-      from: "Servio <onboarding@resend.dev>", // Free Resend default sender
-      to: [options.to],
-      subject: options.subject,
-      html: options.html,
-      text: options.text,
-    });
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          name: "Servio",
+          email: "servios269@gmail.com",
+        },
+        to: [
+          {
+            email: options.to,
+          },
+        ],
+        subject: options.subject,
+        htmlContent: options.html,
+        textContent: options.text || "No content provided",
+      },
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    console.log("Resend Email Sent:", data);
+    console.log("✅ Brevo Email Sent:", response.data);
     return true;
   } catch (error) {
-    console.log("Resend Email Error:", error);
+    console.log("❌ Brevo Email Error:");
+    console.log(error.response?.data || error.message);
     return false;
   }
 };
